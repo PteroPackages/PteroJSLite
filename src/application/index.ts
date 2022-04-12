@@ -1,5 +1,5 @@
 import { application as app } from '../endpoints';
-import { AppServer, CreateUserOptions, Node, PteroUser } from './structs';
+import { AppServer, CreateServerOptions, CreateUserOptions, Node, PteroUser, UpdateBuildOptions, UpdateDetailsOptions, UpdateStartupOptions } from './structs';
 import http, { Auth } from '../http/rest';
 import transfomer from '../transformer';
 
@@ -45,6 +45,67 @@ export class AppController {
         return res;
     }
 
+    async createServer(options: CreateServerOptions): Promise<AppServer> {
+        const data = await http.post<AppServer>(
+            app.servers.main(),
+            this.auth,
+            transfomer.intoJSON(options)
+        );
+        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        this.cache.servers?.set(res.id, res);
+        return res;
+    }
+
+    async updateServerBuild(
+        id: number,
+        options: UpdateBuildOptions
+    ): Promise<AppServer> {
+        const data = await http.patch<AppServer>(
+            app.servers.build(id),
+            this.auth,
+            transfomer.intoJSON(options)
+        );
+        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        this.cache.servers?.set(res.id, res);
+        return res;
+    }
+
+    async updateServerDetails(
+        id: number,
+        options: UpdateDetailsOptions
+    ): Promise<AppServer> {
+        const data = await http.patch<AppServer>(
+            app.servers.details(id),
+            this.auth,
+            transfomer.intoJSON(options)
+        );
+        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        this.cache.servers?.set(res.id, res);
+        return res;
+    }
+
+    async updateServerStartup(
+        id: number,
+        options: UpdateStartupOptions
+    ): Promise<AppServer> {
+        const data = await http.patch<AppServer>(
+            app.servers.startup(id),
+            this.auth,
+            transfomer.intoJSON(options)
+        );
+        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        this.cache.servers?.set(res.id, res);
+        return res;
+    }
+
+    async suspendServer(id: number): Promise<void> {
+        await http.post(app.servers.suspend(id), this.auth);
+    }
+
+    async unsuspendServer(id: number): Promise<void> {
+        await http.post(app.servers.unsuspend(id), this.auth);
+    }
+
     async getUsers(
         id?: number,
         force: boolean = false
@@ -71,7 +132,9 @@ export class AppController {
             this.auth,
             transfomer.intoJSON(options)
         );
-        return transfomer.fromAttributes(data.attributes);
+        const res = transfomer.fromAttributes<PteroUser>(data.attributes);
+        this.cache.users?.set(res.id, res);
+        return res;
     }
 
     async updateUser(
@@ -87,11 +150,14 @@ export class AppController {
             this.auth,
             transfomer.intoJSON(Object.assign(user, options))
         );
-        return transfomer.fromAttributes(data.attributes);
+        const res = transfomer.fromAttributes<PteroUser>(data.attributes);
+        this.cache.users?.set(res.id, res);
+        return res;
     }
 
     async deleteUser(id: number): Promise<true> {
         await http.delete(app.users.get(id), this.auth);
+        this.cache.users?.delete(id);
         return true;
     }
 }

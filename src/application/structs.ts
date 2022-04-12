@@ -65,6 +65,38 @@ export interface PteroUser {
 
 // Option interfaces/types
 
+export interface Container {
+    startupCommand: number;
+    image:          string;
+    installed:      number;
+    environment:    { [key: string]: string | number | boolean };
+}
+
+export interface CreateServerOptions {
+    name:               string;
+    description?:       string;
+    externalId?:        string;
+    user:               number;
+    egg:                number;
+    dockerImage:        string;
+    startup:            string;
+    environment:        { [key: string]: string };
+    skipScripts?:       boolean;
+    oomDisabled?:       boolean;
+    limits?:            Partial<Limits>;
+    featureLimits?:     Partial<FeatureLimits>;
+    allocation:{
+        default:        number;
+        additional?:    string[];
+    };
+    deploy?:{
+        locations:      number[];
+        portRange:      string[];
+        dedicatedIp:    string;
+    };
+    startOnCompletion?: boolean;
+}
+
 export interface CreateUserOptions {
     email:      string;
     username:   string;
@@ -74,9 +106,24 @@ export interface CreateUserOptions {
     rootAdmin?: boolean;
 }
 
-export interface Container {
-    startupCommand: number;
-    image:          string;
-    installed:      number;
-    environment:    { [key: string]: string | number | boolean };
+export interface UpdateBuildOptions extends Partial<Limits & FeatureLimits> {
+    allocation?:        number;
+    oomDisabled?:       boolean;
+    addAllocations?:    number[];
+    removeAllocations?: number[];
+}
+
+export interface UpdateDetailsOptions {
+    name?:          string;
+    user?:          number;
+    externalId?:    string;
+    description?:   string;
+}
+
+export interface UpdateStartupOptions {
+    startup?:       string;
+    environment?:   { [key: string]: string };
+    egg?:           number;
+    image?:         string;
+    skipScripts?:   boolean;
 }
