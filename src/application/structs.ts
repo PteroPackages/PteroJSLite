@@ -1,3 +1,5 @@
+import { FeatureLimits, Limits } from '../common';
+
 // Structures
 
 export interface DaemonData {
@@ -25,7 +27,25 @@ export interface Node {
     daemon:             DaemonData;
 }
 
-export interface AppServer {}
+export interface AppServer {
+    id:             number;
+    uuid:           string;
+    identifier:     string;
+    externalId:     string | undefined;
+    name:           string;
+    description:    string | undefined;
+    status:         string | undefined;
+    suspended:      boolean;
+    limits:         Limits;
+    featureLimits:  FeatureLimits;
+    user:           number;
+    node:           number;
+    nest:           number;
+    egg:            number;
+    container:      Container;
+    createdAt:      number;
+    updatedAt:      number;
+}
 
 export interface PteroUser {
     id:         number;
@@ -51,5 +71,12 @@ export interface CreateUserOptions {
     firstName:  string;
     lastName:   string;
     password?:  string;
-    rootAdmin?:   boolean;
+    rootAdmin?: boolean;
+}
+
+export interface Container {
+    startupCommand: number;
+    image:          string;
+    installed:      number;
+    environment:    { [key: string]: string | number | boolean };
 }

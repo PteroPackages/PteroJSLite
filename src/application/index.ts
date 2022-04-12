@@ -1,5 +1,5 @@
 import { application as app } from '../endpoints';
-import { CreateUserOptions, PteroUser } from './structs';
+import { AppServer, CreateUserOptions, PteroUser } from './structs';
 import http, { Auth } from '../http/rest';
 import transfomer from '../transformer';
 
@@ -8,6 +8,16 @@ export class AppController {
 
     constructor(domain: string, key: string) {
         this.auth = { domain, key };
+    }
+
+    async getServers(id?: number): Promise<AppServer | AppServer[]> {
+        const data = await http.get<AppServer>(
+            id ? app.servers.get(id) : app.servers.main(),
+            this.auth
+        );
+        return id
+            ? transfomer.fromAttributes<AppServer>(data.attributes)
+            : transfomer.fromData<AppServer>(data.data);
     }
 
     async getUsers<T extends number | undefined>(
