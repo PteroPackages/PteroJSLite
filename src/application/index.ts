@@ -1,7 +1,7 @@
 import { application as app } from '../endpoints';
 import { PteroUser } from './structs';
-import caseConv from '../conversions';
 import http from '../http/rest';
+import transfomer from '../transformer';
 
 export class AppController {
     public domain: string;
@@ -12,15 +12,16 @@ export class AppController {
         this.auth = auth;
     }
 
-    async getUsers(id?: number, force: boolean = false): Promise<PteroUser> {
+    async getUsers<T extends number | undefined>(
+        id?: T,
+        force: boolean = false
+    ): Promise<T extends undefined ? PteroUser[] : PteroUser> {
         const data = await http.get<PteroUser>(
             id ? app.users.get(id) : app.users.main(),
-            this.auth
+            this.domain, this.auth
         );
-        return caseConv.toCamelCase(
-            data.attributes, {
-                map:{ '2fa': 'twoFactor' }
-            }
-        ) as PteroUser;
+        return id
+            ? transfomer.fromAttributes<PteroUser>(data.attributes)
+            : transfomer.fromData<PteroUser>(data.data) as any;
     }
 }

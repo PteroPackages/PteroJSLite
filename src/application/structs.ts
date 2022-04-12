@@ -23,7 +23,7 @@ export interface Node {
     daemon:             DaemonData;
 }
 
-export interface PteroServer {}
+export interface AppServer {}
 
 export interface PteroUser {
     id:         number;
@@ -37,4 +37,6 @@ export interface PteroUser {
     language:   string;
     rootAdmin:  boolean;
     twoFactor:  boolean;
+    createdAt:  number;
+    updatedAt:  number | undefined;
 }
