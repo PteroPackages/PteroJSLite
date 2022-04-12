@@ -1,5 +1,14 @@
 import { application as app } from '../endpoints';
-import { AppServer, CreateServerOptions, CreateUserOptions, Node, PteroUser, UpdateBuildOptions, UpdateDetailsOptions, UpdateStartupOptions } from './structs';
+import {
+    AppServer,
+    CreateServerOptions,
+    CreateUserOptions,
+    Node,
+    PteroUser,
+    UpdateBuildOptions,
+    UpdateDetailsOptions,
+    UpdateStartupOptions
+} from './structs';
 import http, { Auth } from '../http/rest';
 import transfomer from '../transformer';
 
@@ -109,7 +118,7 @@ export class AppController {
     async getUsers(
         id?: number,
         force: boolean = false
-    ): Promise<PteroUser[] | PteroUser> {
+    ): Promise<PteroUser | PteroUser[]> {
         const data = await http.get<PteroUser>(
             id ? app.users.get(id) : app.users.main(),
             this.auth
@@ -155,10 +164,9 @@ export class AppController {
         return res;
     }
 
-    async deleteUser(id: number): Promise<true> {
+    async deleteUser(id: number): Promise<void> {
         await http.delete(app.users.get(id), this.auth);
         this.cache.users?.delete(id);
-        return true;
     }
 }
 
