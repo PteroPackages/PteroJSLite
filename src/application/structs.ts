@@ -1,3 +1,5 @@
+// Structures
+
 export interface DaemonData {
     listening:  number;
     sftp:       number;
@@ -36,7 +38,18 @@ export interface PteroUser {
     lastname:   string;
     language:   string;
     rootAdmin:  boolean;
-    twoFactor:  boolean;
+    '2fa':      boolean;
     createdAt:  number;
     updatedAt:  number | undefined;
+}
+
+// Option interfaces/types
+
+export interface CreateUserOptions {
+    email:      string;
+    username:   string;
+    firstName:  string;
+    lastName:   string;
+    password?:  string;
+    rootAdmin?:   boolean;
 }

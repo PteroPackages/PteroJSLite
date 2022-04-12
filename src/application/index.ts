@@ -1,5 +1,5 @@
 import { application as app } from '../endpoints';
-import { PteroUser } from './structs';
+import { CreateUserOptions, PteroUser } from './structs';
 import http from '../http/rest';
 import transfomer from '../transformer';
 
@@ -23,6 +23,33 @@ export class AppController {
         return id
             ? transfomer.fromAttributes<PteroUser>(data.attributes)
             : transfomer.fromData<PteroUser>(data.data) as any;
+    }
+
+    async createUser(options: CreateUserOptions): Promise<PteroUser> {
+        const data = await http.post<PteroUser>(
+            app.users.main(),
+            this.domain,
+            this.auth,
+            transfomer.intoJSON(options)
+        );
+        return transfomer.fromAttributes(data.attributes);
+    }
+
+    async updateUser(id: number, options: Partial<CreateUserOptions>): Promise<PteroUser> {
+        if (!Object.keys(options).length) throw new Error('Not enough options to update the user.');
+        const user = await this.getUsers(id);
+        const data = await http.patch<PteroUser>(
+            app.users.get(id),
+            this.domain,
+            this.auth,
+            transfomer.intoJSON(Object.assign(user, options))
+        );
+        return transfomer.fromAttributes(data.attributes);
+    }
+
+    async deleteUser(id: number): Promise<true> {
+        await http.delete(app.users.get(id), this.domain, this.auth);
+        return true;
     }
 }
 
