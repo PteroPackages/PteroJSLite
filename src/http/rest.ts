@@ -5,7 +5,8 @@ export interface APIError {
     errors:{
         code:       string;
         status:     string;
-        message:    string;
+        detail:     string;
+        // meta?:      { [key: string]: string };
     }[];
 }
 
@@ -32,8 +33,8 @@ function getHeaders(auth: string): { [key: string]: string } {
 }
 
 export function formatThrow({ errors }: APIError): never {
-    const fmt = errors
-        .map(e => `- ${e.code}: ${e.message || 'No details provided'}`)
+    const fmt = '\n'+ errors
+        .map(e => `- ${e.code}: ${e.detail || 'No details provided'}`)
         .join('\n');
 
     throw new Error(fmt);
@@ -68,16 +69,16 @@ async function get<T>(path: string, domain: string, auth: string) {
     return await _fetch<T>('GET', domain + path, auth) as APIResponse<T>;
 }
 
-async function post(path: string, domain: string, auth: string, params: object = null) {
-    return await _fetch('POST', domain + path, auth, params);
+async function post<T>(path: string, domain: string, auth: string, params: object = null) {
+    return await _fetch('POST', domain + path, auth, params) as APIResponse<T> | undefined;
 }
 
-async function patch(path: string, domain: string, auth: string, params: object = null) {
-    return await _fetch('PATCH', domain + path, auth, params);
+async function patch<T>(path: string, domain: string, auth: string, params: object = null) {
+    return await _fetch('PATCH', domain + path, auth, params) as APIResponse<T> | undefined;
 }
 
-async function put(path: string, domain: string, auth: string, params: object = null) {
-    return await _fetch('PUT', domain + path, auth, params);
+async function put<T>(path: string, domain: string, auth: string, params: object = null) {
+    return await _fetch('PUT', domain + path, auth, params) as APIResponse<T> | undefined;
 }
 
 async function _delete(path: string, domain: string, auth: string) {
