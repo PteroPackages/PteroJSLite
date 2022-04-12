@@ -64,24 +64,24 @@ export async function _fetch<T>(
     );
 }
 
-async function get<T>(path: string, auth: string) {
-    return await _fetch<T>('GET', path, auth) as APIResponse<T>;
+async function get<T>(path: string, domain: string, auth: string) {
+    return await _fetch<T>('GET', domain + path, auth) as APIResponse<T>;
 }
 
-async function post(path: string, auth: string, params: object = null) {
-    return await _fetch('POST', path, auth, params);
+async function post(path: string, domain: string, auth: string, params: object = null) {
+    return await _fetch('POST', domain + path, auth, params);
 }
 
-async function patch(path: string, auth: string, params: object = null) {
-    return await _fetch('PATCH', path, auth, params);
+async function patch(path: string, domain: string, auth: string, params: object = null) {
+    return await _fetch('PATCH', domain + path, auth, params);
 }
 
-async function put(path: string, auth: string, params: object = null) {
-    return await _fetch('PUT', path, auth, params);
+async function put(path: string, domain: string, auth: string, params: object = null) {
+    return await _fetch('PUT', domain + path, auth, params);
 }
 
-async function _delete(path: string, auth: string) {
-    return await _fetch('DELETE', path, auth) as void;
+async function _delete(path: string, domain: string, auth: string) {
+    return await _fetch('DELETE', domain + path, auth) as void;
 }
 
 export default {
