@@ -1,15 +1,13 @@
 import { application as app } from '../endpoints';
 import { CreateUserOptions, PteroUser } from './structs';
-import http from '../http/rest';
+import http, { Auth } from '../http/rest';
 import transfomer from '../transformer';
 
 export class AppController {
-    public domain: string;
-    public auth: string;
+    public auth: Auth;
 
-    constructor(domain: string, auth: string) {
-        this.domain = domain;
-        this.auth = auth;
+    constructor(domain: string, key: string) {
+        this.auth = { domain, key };
     }
 
     async getUsers<T extends number | undefined>(
@@ -18,7 +16,7 @@ export class AppController {
     ): Promise<T extends undefined ? PteroUser[] : PteroUser> {
         const data = await http.get<PteroUser>(
             id ? app.users.get(id) : app.users.main(),
-            this.domain, this.auth
+            this.auth
         );
         return id
             ? transfomer.fromAttributes<PteroUser>(data.attributes)
@@ -28,7 +26,6 @@ export class AppController {
     async createUser(options: CreateUserOptions): Promise<PteroUser> {
         const data = await http.post<PteroUser>(
             app.users.main(),
-            this.domain,
             this.auth,
             transfomer.intoJSON(options)
         );
@@ -40,7 +37,6 @@ export class AppController {
         const user = await this.getUsers(id);
         const data = await http.patch<PteroUser>(
             app.users.get(id),
-            this.domain,
             this.auth,
             transfomer.intoJSON(Object.assign(user, options))
         );
@@ -48,7 +44,7 @@ export class AppController {
     }
 
     async deleteUser(id: number): Promise<true> {
-        await http.delete(app.users.get(id), this.domain, this.auth);
+        await http.delete(app.users.get(id), this.auth);
         return true;
     }
 }

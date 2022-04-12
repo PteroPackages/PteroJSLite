@@ -16,6 +16,11 @@ export interface APIResponse<T> {
     attributes?:    T;
 }
 
+export interface Auth {
+    domain: string;
+    key:    string;
+}
+
 export type Method =
     | 'GET'
     | 'POST'
@@ -23,12 +28,12 @@ export type Method =
     | 'PUT'
     | 'DELETE';
 
-function getHeaders(auth: string): { [key: string]: string } {
+function getHeaders(key: string): { [key: string]: string } {
     return {
         'User-Agent': `PteroJSLite ${version}`,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${auth}`
+        'Authorization': `Bearer ${key}`
     };
 }
 
@@ -43,13 +48,13 @@ export function formatThrow({ errors }: APIError): never {
 export async function _fetch<T>(
     method: Method,
     path: string,
-    auth: string,
+    auth: Auth,
     params: object = null
 ): Promise<APIResponse<T> | void> {
     const body = params ? JSON.stringify(params) : undefined;
-    const res = await fetch(path, {
+    const res = await fetch(auth.domain + path, {
         method,
-        headers: getHeaders(auth),
+        headers: getHeaders(auth.key),
         body
     });
 
@@ -65,24 +70,24 @@ export async function _fetch<T>(
     );
 }
 
-async function get<T>(path: string, domain: string, auth: string) {
-    return await _fetch<T>('GET', domain + path, auth) as APIResponse<T>;
+async function get<T>(path: string, auth: Auth) {
+    return await _fetch<T>('GET', path, auth) as APIResponse<T>;
 }
 
-async function post<T>(path: string, domain: string, auth: string, params: object = null) {
-    return await _fetch('POST', domain + path, auth, params) as APIResponse<T> | undefined;
+async function post<T>(path: string, auth: Auth, params: object = null) {
+    return await _fetch('POST', path, auth, params) as APIResponse<T> | undefined;
 }
 
-async function patch<T>(path: string, domain: string, auth: string, params: object = null) {
-    return await _fetch('PATCH', domain + path, auth, params) as APIResponse<T> | undefined;
+async function patch<T>(path: string, auth: Auth, params: object = null) {
+    return await _fetch('PATCH', path, auth, params) as APIResponse<T> | undefined;
 }
 
-async function put<T>(path: string, domain: string, auth: string, params: object = null) {
-    return await _fetch('PUT', domain + path, auth, params) as APIResponse<T> | undefined;
+async function put<T>(path: string, auth: Auth, params: object = null) {
+    return await _fetch('PUT', path, auth, params) as APIResponse<T> | undefined;
 }
 
-async function _delete(path: string, domain: string, auth: string) {
-    return await _fetch('DELETE', domain + path, auth) as void;
+async function _delete(path: string, auth: Auth) {
+    return await _fetch('DELETE', path, auth) as void;
 }
 
 export default {
