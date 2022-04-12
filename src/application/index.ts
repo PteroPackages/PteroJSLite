@@ -25,3 +25,7 @@ export class AppController {
             : transfomer.fromData<PteroUser>(data.data) as any;
     }
 }
+
+export function createApp(domain: string, auth: string) {
+    return new AppController(domain, auth);
+}
