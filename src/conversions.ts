@@ -59,6 +59,8 @@ function toSnakeCase(obj: object, options: ConvertOptions = {}): object {
 }
 
 export default {
+    camelCase,
+    snakeCase,
     toCamelCase,
     toSnakeCase
 }
