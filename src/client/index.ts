@@ -13,7 +13,7 @@ export interface ClientOptions {
 }
 
 export class ClientController {
-    public auth: Partial<Auth>;
+    public auth: Auth;
     public cache:{
         servers?: Map<string, ClientServer>;
     };
@@ -21,13 +21,13 @@ export class ClientController {
     private session: { token?: string; expires: number };
 
     constructor(domain: string, options: ClientOptions) {
-        this.auth = { domain };
+        this.auth = { domain, key: options.key };
         this.cache = {};
 
         if (options.cache) {
             this.cache.servers = new Map<string, ClientServer>();
         }
-        this.restMode = options.key && !options.session;
+        this.restMode = !!options.key;
         this.session = { expires: 0 };
     }
 
@@ -50,7 +50,7 @@ export class ClientController {
         const req = await this.getHttp();
         const data = await req.get<ClientServer>(
             id ? client.servers.get(id) : client.servers.main(),
-            this.auth as Auth
+            this.auth
         );
         const res = id
             ? transformer.fromAttributes<ClientServer>(data.attributes)

@@ -11,9 +11,17 @@ export interface ClientServer {
     serverOwner:    boolean;
     limits:         Limits;
     featureLimits:  FeatureLimits;
-    state:          string | undefined;
+    sftpDetails:{
+        ip:         string;
+        port:       number;
+    };
+    status:         string | undefined;
+    invocation:     string;
+    dockerImage:    string;
     isSuspended:    boolean;
     isInstalling:   boolean;
+    isTransferring: boolean;
+    // TODO: relationships
 }
 
 // Option interfaces/types
