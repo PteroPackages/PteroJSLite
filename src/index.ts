@@ -6,8 +6,13 @@ export const version = v;
 export * from './application';
 export * from './application/structs';
 
+// Client API
+export * from './client';
+export * from './client/structs';
+
 // HTTP
 export * from './http/rest';
+export * from './http/session';
 
 // General
 export * from './common';

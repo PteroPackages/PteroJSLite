@@ -1,91 +1,79 @@
 import fetch from 'node-fetch';
-import {
-    APIError,
-    APIResponse,
-    Auth,
-    formatThrow,
-    Method
-} from './rest';
+import { APIError, APIResponse, Auth, Method } from '../common';
+import { formatThrow } from './rest';
 import { version } from '../../package.json';
 
-async function getXsrfToken(domain: string) {
-    const res = await fetch(domain + '/');
-    if (!res.ok) throw new Error(
-        `Pterodactyl returned an unexpected response (status: ${res.status})`
-    );
-    if (!res.headers.get('set-cookie'))
-        throw new Error('Pterodactyl did not send a cookie');
+export namespace HttpSession {
+    export async function getXsrfToken(domain: string) {
+        const res = await fetch(domain + '/');
+        if (!res.ok) throw new Error(
+            `Pterodactyl returned an unexpected response (status: ${res.status})`
+        );
+        if (!res.headers.get('set-cookie'))
+            throw new Error('Pterodactyl did not send a cookie');
 
-    const token = res.headers.get('set-cookie').split(';')[0].split('=')[1];
-    const expires = res.headers.get('set-cookie').split(';')[1].split('=')[1];
-    return {
-        token,
-        expires: Date.parse(expires)
-    }
-}
-
-function getHeaders(token: string): { [key: string]: string } {
-    return {
-        'User-Agent': `PteroJSLite ${version}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json,text/html',
-        'X-XSRF-TOKEN': token
-    }
-}
-
-export async function _fetch<T>(
-    method: Method,
-    path: string,
-    auth: Auth,
-    params: object = null
-): Promise<APIResponse<T> | void> {
-    const body = params ? JSON.stringify(params) : undefined;
-    const res = await fetch(auth.domain + path, {
-        method,
-        headers: getHeaders(auth.key),
-        body
-    });
-
-    if (res.status === 204) return;
-    const data = await res.json().catch(()=>{});
-    if (data) {
-        if (res.ok) return data as APIResponse<T>;
-        if (res.headers.get('content-type') === 'application/json')
-            formatThrow(data as APIError);
-
-        throw new Error(`Pterodactyl request failed (status: ${res.status})`);
+        const token = res.headers.get('set-cookie').split(';')[0].split('=')[1];
+        const expires = res.headers.get('set-cookie').split(';')[1].split('=')[1];
+        return {
+            token,
+            expires: Date.parse(expires)
+        }
     }
 
-    throw new Error(
-        `Pterodactyl API returned an invalid or malformed payload (code: ${res.status})`
-    );
-}
+    function getHeaders(token: string): { [key: string]: string } {
+        return {
+            'User-Agent': `PteroJSLite ${version}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json,text/html',
+            'X-XSRF-TOKEN': token
+        }
+    }
 
-async function get<T>(path: string, auth: Auth) {
-    return await _fetch<T>('GET', path, auth) as APIResponse<T>;
-}
+    export async function _fetch<T>(
+        method: Method,
+        path: string,
+        auth: Auth,
+        params: object = null
+    ): Promise<APIResponse<T> | void> {
+        const body = params ? JSON.stringify(params) : undefined;
+        const res = await fetch(auth.domain + path, {
+            method,
+            headers: getHeaders(auth.key),
+            body
+        });
 
-async function post<T>(path: string, auth: Auth, params: object = null) {
-    return await _fetch('POST', path, auth, params) as APIResponse<T> | undefined;
-}
+        if (res.status === 204) return;
+        const data = await res.json().catch(()=>{});
+        if (data) {
+            if (res.ok) return data as APIResponse<T>;
+            if (res.headers.get('content-type') === 'application/json')
+                formatThrow(data as APIError);
 
-async function patch<T>(path: string, auth: Auth, params: object = null) {
-    return await _fetch('PATCH', path, auth, params) as APIResponse<T> | undefined;
-}
+            throw new Error(`Pterodactyl request failed (status: ${res.status})`);
+        }
 
-async function put<T>(path: string, auth: Auth, params: object = null) {
-    return await _fetch('PUT', path, auth, params) as APIResponse<T> | undefined;
-}
+        throw new Error(
+            `Pterodactyl API returned an invalid or malformed payload (code: ${res.status})`
+        );
+    }
 
-async function _delete(path: string, auth: Auth) {
-    return await _fetch('DELETE', path, auth) as void;
-}
+    export async function get<T>(path: string, auth: Auth) {
+        return await _fetch<T>('GET', path, auth) as APIResponse<T>;
+    }
 
-export default {
-    getXsrfToken,
-    get,
-    post,
-    patch,
-    put,
-    delete: _delete
+    export async function post<T>(path: string, auth: Auth, params: object = null) {
+        return await _fetch('POST', path, auth, params) as APIResponse<T> | undefined;
+    }
+
+    export async function patch<T>(path: string, auth: Auth, params: object = null) {
+        return await _fetch('PATCH', path, auth, params) as APIResponse<T> | undefined;
+    }
+
+    export async function put<T>(path: string, auth: Auth, params: object = null) {
+        return await _fetch('PUT', path, auth, params) as APIResponse<T> | undefined;
+    }
+
+    export async function _delete(path: string, auth: Auth) {
+        return await _fetch('DELETE', path, auth) as void;
+    }
 }

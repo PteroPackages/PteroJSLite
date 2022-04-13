@@ -1,7 +1,8 @@
 import { client } from '../endpoints';
+import { Auth } from '../common';
 import { ClientServer } from './structs';
-import rest, { Auth } from '../http/rest';
-import session from '../http/session';
+import { HttpRest } from '../http/rest';
+import { HttpSession } from '../http/session';
 import transformer from '../transformer';
 
 export interface ClientOptions {
@@ -30,12 +31,12 @@ export class ClientController {
         this.session = { expires: 0 };
     }
 
-    private async getHttp() {
-        if (this.restMode) return rest;
+    private async getHttp(): Promise<typeof HttpRest | typeof HttpSession> {
+        if (this.restMode) return HttpRest;
         if (Date.now() > this.session.expires)
-            this.session = await session.getXsrfToken(this.auth.domain);
+            this.session = await HttpSession.getXsrfToken(this.auth.domain);
 
-        return session;
+        return HttpSession;
     }
 
     async getServers(
@@ -64,6 +65,9 @@ export class ClientController {
     }
 }
 
-export function createClient(domain: string, options: ClientOptions = {}) {
+export function createClient(
+    domain: string,
+    options: ClientOptions = {}
+) {
     return new ClientController(domain, options);
 }
