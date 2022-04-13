@@ -33,8 +33,10 @@ export class ClientController {
 
     private async getHttp(): Promise<typeof HttpRest | typeof HttpSession> {
         if (this.restMode) return HttpRest;
-        if (Date.now() > this.session.expires)
+        if (Date.now() > this.session.expires) {
             this.session = await HttpSession.getXsrfToken(this.auth.domain);
+            this.auth.key = this.session.token;
+        }
 
         return HttpSession;
     }
