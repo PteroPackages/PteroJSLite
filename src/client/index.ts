@@ -148,7 +148,7 @@ export class ClientController {
             .then(c => c.post(
                 client.account.apikeys(),
                 this.auth,
-                { description, allowedIps }
+                { description, allowed_ips: allowedIps }
             ));
 
         return transformer.fromAttributes(data.attributes);

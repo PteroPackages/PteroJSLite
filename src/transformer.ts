@@ -8,7 +8,9 @@ function fromAttributes<T>(data: { [key: string]: any }): T {
             !Array.isArray(v) &&
             !!v
         ) v = caseConv.toCamelCase(v);
-        if (['created_at', 'updated_at'].includes(k) && v) v = Date.parse(v);
+        if (
+            ['created_at', 'updated_at', 'last_used_at'].includes(k) && v
+        ) v = Date.parse(v);
         res[caseConv.camelCase(k)] = v ?? undefined;
     }
     return res;
