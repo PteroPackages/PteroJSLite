@@ -45,7 +45,7 @@ export const client = {
         tfa: () => '/api/client/account/two-factor',
         email: () => '/api/client/account/email',
         password: () => '/api/client/account/password',
-        apikeys: () => '/api/client/account/api-keys'
+        apikeys: (id?: string) => `/api/client/account/api-keys${id ? '/'+ id : ''}`
     },
     servers:{
         main: () => '/api/client/servers',
