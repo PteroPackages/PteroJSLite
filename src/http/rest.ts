@@ -61,7 +61,7 @@ export namespace HttpRest {
         return await _fetch('PUT', path, auth, params) as APIResponse<T> | undefined;
     }
 
-    export async function _delete(path: string, auth: Auth) {
-        return await _fetch('DELETE', path, auth) as void;
+    export async function _delete(path: string, auth: Auth, params: object = null) {
+        return await _fetch('DELETE', path, auth, params) as void;
     }
 }
