@@ -76,30 +76,30 @@ export class ClientController {
         console.log(data);
     }
 
-    // async getServers(
-    //     id?: string,
-    //     force: boolean = false
-    // ): Promise<ClientServer | ClientServer[]> {
-    //     if (id && !force && this.cache.servers) {
-    //         const s = this.cache.servers.get(id);
-    //         if (s) return Promise.resolve(s);
-    //     }
-    //     const req = await this.getHttp();
-    //     const data = await req.get<ClientServer>(
-    //         id ? client.servers.get(id) : client.servers.main(),
-    //         this.auth
-    //     );
-    //     const res = id
-    //         ? transformer.fromAttributes<ClientServer>(data.attributes)
-    //         : transformer.fromData<ClientServer>(data.data);
+    async getServers(
+        id?: string,
+        force: boolean = false
+    ): Promise<ClientServer | ClientServer[]> {
+        if (id && !force && this.cache.servers) {
+            const s = this.cache.servers.get(id);
+            if (s) return Promise.resolve(s);
+        }
+        const req = await this.getHttp();
+        const data = await req.get<ClientServer>(
+            id ? client.servers.get(id) : client.servers.main(),
+            this.auth
+        );
+        const res = id
+            ? transformer.fromAttributes<ClientServer>(data.attributes)
+            : transformer.fromData<ClientServer>(data.data);
 
-    //     if (this.cache.servers) {
-    //         Array.isArray(res)
-    //             ? res.forEach(s => this.cache.servers.set(s.identifier, s))
-    //             : this.cache.servers.set(res.identifier, res);
-    //     }
-    //     return res;
-    // }
+        if (this.cache.servers) {
+            Array.isArray(res)
+                ? res.forEach(s => this.cache.servers.set(s.identifier, s))
+                : this.cache.servers.set(res.identifier, res);
+        }
+        return res;
+    }
 }
 
 export function createClient(
