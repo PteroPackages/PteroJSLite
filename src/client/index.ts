@@ -6,27 +6,28 @@ import { HttpSession } from '../http/session';
 import transformer from '../transformer';
 
 export interface ClientOptions {
-    key?:           string;
-    cache?:         boolean;
-    session?:{
-        username:   string;
-        password:   string;
+    key?: string;
+    cache?: boolean;
+    session?: {
+        username: string;
+        password: string;
     }
-    ws?:            boolean;
+    ws?: boolean;
 }
 
 export class ClientController {
     public auth: Auth;
-    public cache:{
+    public cache: {
         apikeys?: Map<string, APIKey>;
         servers?: Map<string, ClientServer>;
     };
     public restMode: boolean;
-    private session:{
+    private session: {
         username?: string;
         password?: string;
         token?: string;
         expires: number;
+        pterodactylSession?: string;
     };
 
     constructor(domain: string, options: ClientOptions) {
@@ -46,15 +47,16 @@ export class ClientController {
     private async getHttp(): Promise<typeof HttpRest | typeof HttpSession> {
         if (this.restMode) return HttpRest;
         if (Date.now() > this.session.expires) {
-            this.session = await HttpSession.getXsrfToken(this.auth.domain);
+            this.session = { ...this.session, ...(await HttpSession.getXsrfToken(this.auth.domain)) };
             this.auth.key = this.session.token;
+            this.auth.session = this.session.pterodactylSession;
         }
 
         return HttpSession;
     }
 
     async login(
-        credentials?:{
+        credentials?: {
             username: string;
             password: string;
         }
@@ -75,7 +77,7 @@ export class ClientController {
                 password: this.session.password
             }
         );
-        console.log(data);
+
     }
 
     async getClient(): Promise<ClientUser> {
