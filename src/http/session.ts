@@ -11,24 +11,28 @@ export namespace HttpSession {
         );
         if (!res.headers.get('set-cookie'))
             throw new Error('Pterodactyl did not send a cookie');
-
-        let token: string, expires: string;
-        for (let cookie of res.headers.get('set-cookie').split(';')) {
+        let token: string, expires: string, session: string;
+        for (let cookie of res.headers.raw()['set-cookie']) {
+            cookie = cookie.split(";")[0];
             if (cookie.startsWith('XSRF-TOKEN')) token = cookie.split('=')[1];
             if (cookie.startsWith('expires')) expires = cookie.split('=')[1];
+            if (cookie.startsWith("pterodactyl_session")) session = cookie.split('=')[1];
         }
         return {
             token: decodeURIComponent(token),
-            expires: Date.parse(expires)
+            expires: Date.parse(expires),
+            pterodactylSession: session,
         }
     }
 
-    function getHeaders(token: string): { [key: string]: string } {
+    function getHeaders(token: string, session: string): { [key: string]: string } {
         return {
             'User-Agent': `PteroJSLite ${version}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json,text/html',
-            'X-XSRF-TOKEN': token
+            'x-xsrf-token': token,
+            'credentials': 'same-origin',
+            cookie: `XSRF-TOKEN=${encodeURIComponent(token)}; pterodactyl_session=${session}`
         }
     }
 
@@ -41,10 +45,9 @@ export namespace HttpSession {
         const body = params ? JSON.stringify(params) : undefined;
         const res = await fetch(auth.domain + path, {
             method,
-            headers: getHeaders(auth.key),
+            headers: getHeaders(auth.key, auth.session),
             body
         });
-
         if (res.status === 204) return;
         const data = await res.json().catch(()=>{});
         if (data) {
