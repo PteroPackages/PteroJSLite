@@ -27,6 +27,7 @@ export class ClientController {
         password?: string;
         token?: string;
         expires: number;
+        pterodactylSession?: string;
     };
 
     constructor(domain: string, options: ClientOptions) {
@@ -48,6 +49,7 @@ export class ClientController {
         if (Date.now() > this.session.expires) {
             this.session = await HttpSession.getXsrfToken(this.auth.domain);
             this.auth.key = this.session.token;
+            this.auth.session = this.session.pterodactylSession;
         }
 
         return HttpSession;
@@ -75,7 +77,6 @@ export class ClientController {
                 password: this.session.password
             }
         );
-        console.log(data);
     }
 
     async getClient(): Promise<ClientUser> {

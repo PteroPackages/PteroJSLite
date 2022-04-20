@@ -15,6 +15,7 @@ export interface APIResponse<T> {
 export interface Auth {
     domain: string;
     key:    string;
+    session?: string;
 }
 
 export interface FeatureLimits {
