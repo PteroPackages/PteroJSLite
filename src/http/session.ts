@@ -12,10 +12,13 @@ export namespace HttpSession {
         if (!res.headers.get('set-cookie'))
             throw new Error('Pterodactyl did not send a cookie');
 
-        const token = res.headers.get('set-cookie').split(';')[0].split('=')[1];
-        const expires = res.headers.get('set-cookie').split(';')[1].split('=')[1];
+        let token: string, expires: string;
+        for (let cookie of res.headers.get('set-cookie').split(';')) {
+            if (cookie.startsWith('XSRF-TOKEN')) token = cookie.split('=')[1];
+            if (cookie.startsWith('expires')) expires = cookie.split('=')[1];
+        }
         return {
-            token,
+            token: decodeURIComponent(token),
             expires: Date.parse(expires)
         }
     }

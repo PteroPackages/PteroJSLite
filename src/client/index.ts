@@ -70,10 +70,10 @@ export class ClientController {
         const data = await req.post<LoginResponse>(
             client.auth.login(),
             this.auth,
-            transformer.intoJSON({
+            {
                 user: this.session.username,
                 password: this.session.password
-            })
+            }
         );
         console.log(data);
     }
