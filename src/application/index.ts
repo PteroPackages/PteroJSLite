@@ -13,7 +13,7 @@ import { HttpRest } from '../http/rest';
 import { Auth } from '../common';
 import transfomer from '../transformer';
 
-export interface AppCacheOptions {
+export interface AppOptions {
     cache?: boolean;
 }
 
@@ -26,7 +26,7 @@ export class AppController {
         users?: Map<number, PteroUser>;
     };
 
-    constructor(domain: string, key: string, options: AppCacheOptions) {
+    constructor(domain: string, key: string, options: AppOptions) {
         this.auth = { domain, key };
         this.cache = {};
 
@@ -174,7 +174,7 @@ export class AppController {
 export function createApp(
     domain: string,
     auth: string,
-    options: AppCacheOptions = {}
+    options: AppOptions = {}
 ) {
     return new AppController(domain, auth, options);
 }
