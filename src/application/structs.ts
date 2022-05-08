@@ -47,7 +47,7 @@ export interface AppServer {
     updatedAt:      number;
 }
 
-export interface PteroUser {
+export interface User {
     id:         number;
     uuid:       string;
     identifier: string;

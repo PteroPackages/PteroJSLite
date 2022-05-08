@@ -4,7 +4,7 @@ import {
     CreateServerOptions,
     CreateUserOptions,
     Node,
-    PteroUser,
+    User,
     UpdateBuildOptions,
     UpdateDetailsOptions,
     UpdateStartupOptions
@@ -23,7 +23,7 @@ export class AppController {
         allocations?: Map<number, object>;
         nodes?: Map<number, Node>;
         servers?: Map<number, AppServer>;
-        users?: Map<number, PteroUser>;
+        users?: Map<number, User>;
     };
 
     constructor(domain: string, key: string, options: AppOptions) {
@@ -34,7 +34,7 @@ export class AppController {
             this.cache.allocations = new Map<number, object>();
             this.cache.nodes = new Map<number, Node>();
             this.cache.servers = new Map<number, AppServer>();
-            this.cache.users = new Map<number, PteroUser>();
+            this.cache.users = new Map<number, User>();
         }
     }
 
@@ -119,14 +119,14 @@ export class AppController {
     async getUsers(
         id?: number,
         force: boolean = false
-    ): Promise<PteroUser | PteroUser[]> {
-        const data = await HttpRest.get<PteroUser>(
+    ): Promise<User | User[]> {
+        const data = await HttpRest.get<User>(
             id ? app.users.get(id) : app.users.main(),
             this.auth
         );
         const res = id
-            ? transfomer.fromAttributes<PteroUser>(data.attributes)
-            : transfomer.fromData<PteroUser>(data.data);
+            ? transfomer.fromAttributes<User>(data.attributes)
+            : transfomer.fromData<User>(data.data);
 
         if (this.cache.users) {
             Array.isArray(res)
@@ -136,13 +136,13 @@ export class AppController {
         return res;
     }
 
-    async createUser(options: CreateUserOptions): Promise<PteroUser> {
-        const data = await HttpRest.post<PteroUser>(
+    async createUser(options: CreateUserOptions): Promise<User> {
+        const data = await HttpRest.post<User>(
             app.users.main(),
             this.auth,
             transfomer.intoJSON(options)
         );
-        const res = transfomer.fromAttributes<PteroUser>(data.attributes);
+        const res = transfomer.fromAttributes<User>(data.attributes);
         this.cache.users?.set(res.id, res);
         return res;
     }
@@ -150,17 +150,17 @@ export class AppController {
     async updateUser(
         id: number,
         options: Partial<CreateUserOptions>
-    ): Promise<PteroUser> {
+    ): Promise<User> {
         if (!Object.keys(options).length)
             throw new Error('Not enough options to update the user.');
 
         const user = await this.getUsers(id);
-        const data = await HttpRest.patch<PteroUser>(
+        const data = await HttpRest.patch<User>(
             app.users.get(id),
             this.auth,
             transfomer.intoJSON(Object.assign(user, options))
         );
-        const res = transfomer.fromAttributes<PteroUser>(data.attributes);
+        const res = transfomer.fromAttributes<User>(data.attributes);
         this.cache.users?.set(res.id, res);
         return res;
     }
