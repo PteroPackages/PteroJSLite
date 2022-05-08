@@ -69,7 +69,7 @@ export interface Container {
     startupCommand: number;
     image:          string;
     installed:      number;
-    environment:    { [key: string]: string | number | boolean };
+    environment:    Record<string, string | number | boolean>;
 }
 
 export interface CreateServerOptions {
@@ -80,7 +80,7 @@ export interface CreateServerOptions {
     egg:                number;
     dockerImage:        string;
     startup:            string;
-    environment:        { [key: string]: string };
+    environment:        Record<string, string>;
     skipScripts?:       boolean;
     oomDisabled?:       boolean;
     limits?:            Partial<Limits>;
@@ -122,7 +122,7 @@ export interface UpdateDetailsOptions {
 
 export interface UpdateStartupOptions {
     startup?:       string;
-    environment?:   { [key: string]: string };
+    environment?:   Record<string, string>;
     egg?:           number;
     image?:         string;
     skipScripts?:   boolean;

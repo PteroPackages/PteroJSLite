@@ -1,6 +1,6 @@
 interface ConvertOptions {
     ignore?:    string[];
-    map?:       { [key: string]: string };
+    map?:       Record<string, string>;
 }
 
 function camelCase(str: string): string {
@@ -22,7 +22,7 @@ function camelCase(str: string): string {
 }
 
 function toCamelCase(obj: object, options: ConvertOptions = {}): object {
-    const parsed: { [key: string]: object } = {};
+    const parsed: Record<string, object> = {};
 
     for (let [k, v] of Object.entries(obj)) {
         if (options.ignore?.includes(k)) continue;
@@ -47,7 +47,7 @@ function snakeCase(str: string): string {
 }
 
 function toSnakeCase(obj: object, options: ConvertOptions = {}): object {
-    const parsed: { [key: string]: object } = {};
+    const parsed: Record<string, object> = {};
 
     for (let [k, v] of Object.entries(obj)) {
         if (options.ignore?.includes(k)) continue;

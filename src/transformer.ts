@@ -1,6 +1,6 @@
 import caseConv from './conversions';
 
-function fromAttributes<T>(data: { [key: string]: any }): T {
+function fromAttributes<T>(data: Record<string, any>): T {
     let res = {} as T;
     for (let [k, v] of Object.entries<any>(data)) {
         if (
@@ -16,12 +16,12 @@ function fromAttributes<T>(data: { [key: string]: any }): T {
     return res;
 }
 
-function fromData<T>(data: { [key: string]: any }[]): T[] {
+function fromData<T>(data: Record<string, any>[]): T[] {
     return data.map<T>(d => fromAttributes(d.attributes));
 }
 
-function intoJSON(data: any): { [key: string]: any } {
-    let res: { [key: string]: any } = {};
+function intoJSON(data: any): Record<string, any> {
+    let res: Record<string, any> = {};
     for (let [k, v] of Object.entries(data)) {
         if (
             typeof v === 'object' &&

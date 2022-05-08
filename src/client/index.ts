@@ -32,13 +32,13 @@ export class ClientController {
     }
 
     async getTwoFactorURL(): Promise<string> {
-        const data = await HttpRest.get<any>(client.account.tfa(), this.auth);
+        const data = await HttpRest.get(client.account.tfa(), this.auth);
         return (data.data as any).image_url_data;
     }
 
     async enableTwoFactor(code: string): Promise<string[]> {
-        const data = await HttpRest.post(client.account.tfa(), this.auth);
-        return transformer.fromAttributes(data.attributes);
+        const data = await HttpRest.post(client.account.tfa(), this.auth, { code });
+        return transformer.fromAttributes<string[]>(data.attributes);
     }
 
     async disableTwoFactor(password: string): Promise<void> {
@@ -73,7 +73,7 @@ export class ClientController {
         description: string,
         allowedIps: string[] = []
     ): Promise<APIKey> {
-        const data = await HttpRest.post(
+        const data = await HttpRest.post<APIKey>(
             client.account.apikeys(),
             this.auth,
             {
@@ -98,7 +98,7 @@ export class ClientController {
             if (s) return Promise.resolve(s);
         }
 
-        const data = await HttpRest.get<ClientServer>(
+        const data = await HttpRest.get(
             id ? client.servers.get(id) : client.servers.main(),
             this.auth
         );

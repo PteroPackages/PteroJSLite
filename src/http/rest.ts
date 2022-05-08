@@ -11,7 +11,7 @@ export function formatThrow({ errors }: APIError): never {
 }
 
 export namespace HttpRest {
-    function getHeaders(key: string): { [key: string]: string } {
+    function getHeaders(key: string): Record<string, string> {
         return {
             'User-Agent': `PteroJSLite ${version}`,
             'Content-Type': 'application/json',
