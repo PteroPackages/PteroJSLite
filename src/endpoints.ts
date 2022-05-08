@@ -35,11 +35,6 @@ export const application = {
 }
 
 export const client = {
-    auth:{
-        login: () => '/auth/login',
-        checkpoint: () => '/auth/login/checkpoint',
-        logout: () => '/auth/logout'
-    },
     account:{
         main: () => '/api/client/account',
         tfa: () => '/api/client/account/two-factor',

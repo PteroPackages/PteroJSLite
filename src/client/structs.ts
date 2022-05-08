@@ -43,10 +43,3 @@ export interface ClientUser {
 }
 
 // Option interfaces/types
-
-export interface LoginResponse {
-    complete:           boolean;
-    intended?:          string;
-    user?:              object;
-    confirmationToken?: string;
-}

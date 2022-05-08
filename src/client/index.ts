@@ -1,33 +1,20 @@
 import { client } from '../endpoints';
 import { Auth } from '../common';
-import { APIKey, ClientServer, ClientUser, LoginResponse } from './structs';
+import { APIKey, ClientServer, ClientUser } from './structs';
 import { HttpRest } from '../http/rest';
-import { HttpSession } from '../http/session';
 import transformer from '../transformer';
 
 export interface ClientOptions {
-    key?: string;
+    key?:   string;
     cache?: boolean;
-    session?: {
-        username: string;
-        password: string;
-    }
-    ws?: boolean;
+    ws?:    boolean;
 }
 
 export class ClientController {
     public auth: Auth;
-    public cache: {
+    public cache:{
         apikeys?: Map<string, APIKey>;
         servers?: Map<string, ClientServer>;
-    };
-    public restMode: boolean;
-    private session: {
-        username?: string;
-        password?: string;
-        token?: string;
-        expires: number;
-        pterodactylSession?: string;
     };
 
     constructor(domain: string, options: ClientOptions) {
@@ -37,105 +24,46 @@ export class ClientController {
             this.cache.apikeys = new Map<string, APIKey>();
             this.cache.servers = new Map<string, ClientServer>();
         }
-        this.restMode = !!options.key;
-        this.session = {
-            ...options.session,
-            expires: 0
-        };
-    }
-
-    private async getHttp(): Promise<typeof HttpRest | typeof HttpSession> {
-        if (this.restMode) return HttpRest;
-        if (Date.now() > this.session.expires) {
-            this.session = { ...this.session, ...(await HttpSession.getXsrfToken(this.auth.domain)) };
-            this.auth.key = this.session.token;
-            this.auth.session = this.session.pterodactylSession;
-        }
-
-        return HttpSession;
-    }
-
-    async login(
-        credentials?: {
-            username: string;
-            password: string;
-        }
-    ): Promise<void> {
-        if (this.restMode) throw new Error(
-            'Login endpoint is only available with session mode.'
-        );
-        if (credentials) this.session = Object.assign(this.session, credentials);
-        if (!this.session.username || !this.session.password)
-            throw new Error('Username/email and password is required for login.');
-
-        const req = await this.getHttp();
-        const data = await req.post<LoginResponse>(
-            client.auth.login(),
-            this.auth,
-            {
-                user: this.session.username,
-                password: this.session.password
-            }
-        );
-
     }
 
     async getClient(): Promise<ClientUser> {
-        const data = await this
-            .getHttp()
-            .then(c => c.get<ClientUser>(client.account.main(), this.auth));
-
+        const data = await HttpRest.get<ClientUser>(client.account.main(), this.auth);
         return transformer.fromAttributes(data.attributes);
     }
 
     async getTwoFactorURL(): Promise<string> {
-        const data = await this
-            .getHttp()
-            .then(c => c.get<any>(client.account.tfa(), this.auth));
-
+        const data = await HttpRest.get<any>(client.account.tfa(), this.auth);
         return (data.data as any).image_url_data;
     }
 
     async enableTwoFactor(code: string): Promise<string[]> {
-        const data = await this
-            .getHttp()
-            .then(c => c.post(client.account.tfa(), this.auth, { code }));
-
+        const data = await HttpRest.post(client.account.tfa(), this.auth);
         return transformer.fromAttributes(data.attributes);
     }
 
     async disableTwoFactor(password: string): Promise<void> {
-        await this
-            .getHttp()
-            .then(c => c._delete(client.account.tfa(), this.auth, { password }));
+        await HttpRest._delete(client.account.tfa(), this.auth, { password });
     }
 
     async updateEmail(email: string, password: string): Promise<void> {
-        await this
-            .getHttp()
-            .then(c => c.put(client.account.email(), this.auth, { email, password }));
+        await HttpRest.put(client.account.email(), this.auth, { email, password });
     }
 
     async updatePassword(oldPass: string, newPass: string): Promise<void> {
         if (oldPass.toLowerCase() === newPass.toLowerCase()) return Promise.resolve();
-        await this
-            .getHttp()
-            .then(c => c.put(
-                client.account.password(),
-                this.auth,
-                {
-                    current_password: oldPass,
-                    password: newPass,
-                    password_confirmation: newPass
-                }
-            ));
+        await HttpRest.put(
+            client.account.password(),
+            this.auth,
+            {
+                current_password: oldPass,
+                password: newPass,
+                password_confirmation: newPass
+            }
+        );
     }
 
     async getAPIKeys(): Promise<APIKey[]> {
-        const data = await this
-            .getHttp()
-            .then(c => c.get(client.account.apikeys(), this.auth));
-
+        const data = await HttpRest.get(client.account.apikeys(), this.auth);
         const res = transformer.fromData<APIKey>(data.data);
         res.forEach(k => this.cache.apikeys?.set(k.identifier, k));
         return res;
@@ -145,22 +73,19 @@ export class ClientController {
         description: string,
         allowedIps: string[] = []
     ): Promise<APIKey> {
-        const data = await this
-            .getHttp()
-            .then(c => c.post(
-                client.account.apikeys(),
-                this.auth,
-                { description, allowed_ips: allowedIps }
-            ));
+        const data = await HttpRest.post(
+            client.account.apikeys(),
+            this.auth,
+            {
+                description,
+                allowed_ips: allowedIps
+            });
 
         return transformer.fromAttributes(data.attributes);
     }
 
     async deleteAPIKey(id: string): Promise<void> {
-        await this
-            .getHttp()
-            .then(c => c._delete(client.account.apikeys(id), this.auth));
-
+        await HttpRest._delete(client.account.apikeys(id), this.auth);
         this.cache.apikeys?.delete(id);
     }
 
@@ -172,8 +97,8 @@ export class ClientController {
             const s = this.cache.servers.get(id);
             if (s) return Promise.resolve(s);
         }
-        const req = await this.getHttp();
-        const data = await req.get<ClientServer>(
+
+        const data = await HttpRest.get<ClientServer>(
             id ? client.servers.get(id) : client.servers.main(),
             this.auth
         );
