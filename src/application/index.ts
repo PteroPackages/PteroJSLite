@@ -9,7 +9,7 @@ import {
     UpdateDetailsOptions,
     UpdateStartupOptions
 } from './structs';
-import { HttpRest } from '../http/rest';
+import { Http } from '../http';
 import { Auth } from '../common';
 import transfomer from '../transformer';
 
@@ -39,7 +39,7 @@ export class AppController {
     }
 
     async getServers(id?: number): Promise<AppServer | AppServer[]> {
-        const data = await HttpRest.get<AppServer>(
+        const data = await Http.get<AppServer>(
             id ? app.servers.get(id) : app.servers.main(),
             this.auth
         );
@@ -56,7 +56,7 @@ export class AppController {
     }
 
     async createServer(options: CreateServerOptions): Promise<AppServer> {
-        const data = await HttpRest.post<AppServer>(
+        const data = await Http.post<AppServer>(
             app.servers.main(),
             this.auth,
             transfomer.intoJSON(options)
@@ -70,7 +70,7 @@ export class AppController {
         id: number,
         options: UpdateBuildOptions
     ): Promise<AppServer> {
-        const data = await HttpRest.patch<AppServer>(
+        const data = await Http.patch<AppServer>(
             app.servers.build(id),
             this.auth,
             transfomer.intoJSON(options)
@@ -84,7 +84,7 @@ export class AppController {
         id: number,
         options: UpdateDetailsOptions
     ): Promise<AppServer> {
-        const data = await HttpRest.patch<AppServer>(
+        const data = await Http.patch<AppServer>(
             app.servers.details(id),
             this.auth,
             transfomer.intoJSON(options)
@@ -98,7 +98,7 @@ export class AppController {
         id: number,
         options: UpdateStartupOptions
     ): Promise<AppServer> {
-        const data = await HttpRest.patch<AppServer>(
+        const data = await Http.patch<AppServer>(
             app.servers.startup(id),
             this.auth,
             transfomer.intoJSON(options)
@@ -109,18 +109,18 @@ export class AppController {
     }
 
     async suspendServer(id: number): Promise<void> {
-        await HttpRest.post(app.servers.suspend(id), this.auth);
+        await Http.post(app.servers.suspend(id), this.auth);
     }
 
     async unsuspendServer(id: number): Promise<void> {
-        await HttpRest.post(app.servers.unsuspend(id), this.auth);
+        await Http.post(app.servers.unsuspend(id), this.auth);
     }
 
     async getUsers(
         id?: number,
         force: boolean = false
     ): Promise<User | User[]> {
-        const data = await HttpRest.get<User>(
+        const data = await Http.get<User>(
             id ? app.users.get(id) : app.users.main(),
             this.auth
         );
@@ -137,7 +137,7 @@ export class AppController {
     }
 
     async createUser(options: CreateUserOptions): Promise<User> {
-        const data = await HttpRest.post<User>(
+        const data = await Http.post<User>(
             app.users.main(),
             this.auth,
             transfomer.intoJSON(options)
@@ -155,7 +155,7 @@ export class AppController {
             throw new Error('Not enough options to update the user.');
 
         const user = await this.getUsers(id);
-        const data = await HttpRest.patch<User>(
+        const data = await Http.patch<User>(
             app.users.get(id),
             this.auth,
             transfomer.intoJSON(Object.assign(user, options))
@@ -166,7 +166,7 @@ export class AppController {
     }
 
     async deleteUser(id: number): Promise<void> {
-        await HttpRest._delete(app.users.get(id), this.auth);
+        await Http._delete(app.users.get(id), this.auth);
         this.cache.users?.delete(id);
     }
 }

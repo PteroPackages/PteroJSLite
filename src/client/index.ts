@@ -1,7 +1,7 @@
 import { client } from '../endpoints';
 import { Auth } from '../common';
 import { Account, APIKey, ClientServer } from './structs';
-import { HttpRest } from '../http/rest';
+import { Http } from '../http';
 import transformer from '../transformer';
 
 export interface ClientOptions {
@@ -26,31 +26,31 @@ export class ClientController {
     }
 
     async getAccount(): Promise<Account> {
-        const data = await HttpRest.get<Account>(client.account.main(), this.auth);
+        const data = await Http.get<Account>(client.account.main(), this.auth);
         return transformer.fromAttributes(data.attributes);
     }
 
     async getTwoFactorURL(): Promise<string> {
-        const data = await HttpRest.get(client.account.tfa(), this.auth);
+        const data = await Http.get(client.account.tfa(), this.auth);
         return (data.data as any).image_url_data;
     }
 
     async enableTwoFactor(code: string): Promise<string[]> {
-        const data = await HttpRest.post(client.account.tfa(), this.auth, { code });
+        const data = await Http.post(client.account.tfa(), this.auth, { code });
         return transformer.fromAttributes<string[]>(data.attributes);
     }
 
     async disableTwoFactor(password: string): Promise<void> {
-        await HttpRest._delete(client.account.tfa(), this.auth, { password });
+        await Http._delete(client.account.tfa(), this.auth, { password });
     }
 
     async updateEmail(email: string, password: string): Promise<void> {
-        await HttpRest.put(client.account.email(), this.auth, { email, password });
+        await Http.put(client.account.email(), this.auth, { email, password });
     }
 
     async updatePassword(oldPass: string, newPass: string): Promise<void> {
         if (oldPass.toLowerCase() === newPass.toLowerCase()) return Promise.resolve();
-        await HttpRest.put(
+        await Http.put(
             client.account.password(),
             this.auth,
             {
@@ -62,7 +62,7 @@ export class ClientController {
     }
 
     async getAPIKeys(): Promise<APIKey[]> {
-        const data = await HttpRest.get(client.account.apikeys(), this.auth);
+        const data = await Http.get(client.account.apikeys(), this.auth);
         const res = transformer.fromData<APIKey>(data.data);
         res.forEach(k => this.cache.apikeys?.set(k.identifier, k));
         return res;
@@ -72,7 +72,7 @@ export class ClientController {
         description: string,
         allowedIps: string[] = []
     ): Promise<APIKey> {
-        const data = await HttpRest.post<APIKey>(
+        const data = await Http.post<APIKey>(
             client.account.apikeys(),
             this.auth,
             {
@@ -84,7 +84,7 @@ export class ClientController {
     }
 
     async deleteAPIKey(id: string): Promise<void> {
-        await HttpRest._delete(client.account.apikeys(id), this.auth);
+        await Http._delete(client.account.apikeys(id), this.auth);
         this.cache.apikeys?.delete(id);
     }
 
@@ -97,7 +97,7 @@ export class ClientController {
             if (s) return Promise.resolve(s);
         }
 
-        const data = await HttpRest.get(
+        const data = await Http.get(
             id ? client.servers.get(id) : client.servers.main(),
             this.auth
         );

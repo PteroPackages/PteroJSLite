@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
-import { APIError, APIResponse, Auth, Method } from '../common';
-import { version } from '../../package.json';
+import { Auth, APIError, APIResponse, Method } from './common';
+import { version } from '../package.json';
 
 export function formatThrow({ errors }: APIError): never {
     const fmt = '\n'+ errors
@@ -10,7 +10,7 @@ export function formatThrow({ errors }: APIError): never {
     throw new Error(fmt);
 }
 
-export namespace HttpRest {
+export namespace Http {
     function getHeaders(key: string): Record<string, string> {
         return {
             'User-Agent': `PteroJSLite ${version}`,

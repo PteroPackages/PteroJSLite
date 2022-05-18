@@ -11,7 +11,7 @@ export * from './client';
 export * from './client/structs';
 
 // HTTP
-export * from './http/rest';
+export * from './http';
 
 // General
 export * from './common';
