@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Auth, APIError, APIResponse, Method } from './common';
 import { version } from '../package.json';
 
@@ -27,22 +27,28 @@ export namespace Http {
         params: object = null
     ): Promise<APIResponse<T> | void> {
         const body = params ? JSON.stringify(params) : undefined;
-        const res = await fetch(auth.domain + path, {
+        return await axios.request({
+            url: auth.domain + path,
             method,
             headers: getHeaders(auth.key),
-            body
-        });
+            data: body
+        })
+            .then(handleResponse)
+            .catch(handleError);
+    }
 
-        if (res.status === 204) return;
-        const data = await res.json().catch(()=>{});
-        if (data) {
-            if (res.ok) return data as APIResponse<T>;
-            formatThrow(data as APIError);
-        }
+    function handleResponse(res: AxiosResponse): any | void {
+        if ([202, 204].includes(res.status)) return;
+        return res.data;
+    }
 
-        throw new Error(
-            `Pterodactyl API returned an invalid or malformed payload (code: ${res.status})`
+    function handleError(err: AxiosError): never {
+        if (!err.status && !err.response) throw new Error(err.message);
+        if (err.response.status >= 500) throw new Error(
+            `Pterodactyl API returned an invalid or unknown response `+
+            `(code: ${err.response.status})`
         );
+        formatThrow(err.response.data as APIError);
     }
 
     export async function get<T>(path: string, auth: Auth) {

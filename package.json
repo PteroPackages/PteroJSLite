@@ -23,9 +23,6 @@
   },
   "homepage": "https://github.com/PteroPackages/PteroJSLite#readme",
   "dependencies": {
-    "node-fetch": "^2.6.7"
-  },
-  "devDependencies": {
-    "@types/node-fetch": "^2.5.12"
+    "axios": "^0.27.2"
   }
 }
