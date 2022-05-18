@@ -39,7 +39,7 @@ export class AppController {
     }
 
     async getServers(id?: number): Promise<AppServer | AppServer[]> {
-        const data = await Http.get<AppServer>(
+        const data = await Http.get(
             id ? app.servers.get(id) : app.servers.main(),
             this.auth
         );
@@ -56,7 +56,7 @@ export class AppController {
     }
 
     async createServer(options: CreateServerOptions): Promise<AppServer> {
-        const data = await Http.post<AppServer>(
+        const data = await Http.post(
             app.servers.main(),
             this.auth,
             transfomer.intoJSON(options)
@@ -70,7 +70,7 @@ export class AppController {
         id: number,
         options: UpdateBuildOptions
     ): Promise<AppServer> {
-        const data = await Http.patch<AppServer>(
+        const data = await Http.patch(
             app.servers.build(id),
             this.auth,
             transfomer.intoJSON(options)
@@ -84,7 +84,7 @@ export class AppController {
         id: number,
         options: UpdateDetailsOptions
     ): Promise<AppServer> {
-        const data = await Http.patch<AppServer>(
+        const data = await Http.patch(
             app.servers.details(id),
             this.auth,
             transfomer.intoJSON(options)
@@ -98,7 +98,7 @@ export class AppController {
         id: number,
         options: UpdateStartupOptions
     ): Promise<AppServer> {
-        const data = await Http.patch<AppServer>(
+        const data = await Http.patch(
             app.servers.startup(id),
             this.auth,
             transfomer.intoJSON(options)
@@ -120,7 +120,10 @@ export class AppController {
         id?: number,
         force: boolean = false
     ): Promise<User | User[]> {
-        const data = await Http.get<User>(
+        if (!force && this.cache.users?.has(id))
+            return this.cache.users!.get(id);
+
+        const data = await Http.get(
             id ? app.users.get(id) : app.users.main(),
             this.auth
         );
@@ -137,7 +140,7 @@ export class AppController {
     }
 
     async createUser(options: CreateUserOptions): Promise<User> {
-        const data = await Http.post<User>(
+        const data = await Http.post(
             app.users.main(),
             this.auth,
             transfomer.intoJSON(options)
@@ -155,7 +158,7 @@ export class AppController {
             throw new Error('Not enough options to update the user.');
 
         const user = await this.getUsers(id);
-        const data = await Http.patch<User>(
+        const data = await Http.patch(
             app.users.get(id),
             this.auth,
             transfomer.intoJSON(Object.assign(user, options))

@@ -24,5 +24,8 @@
   "homepage": "https://github.com/PteroPackages/PteroJSLite#readme",
   "dependencies": {
     "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.4"
   }
 }
