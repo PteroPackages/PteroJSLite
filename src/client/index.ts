@@ -5,7 +5,6 @@ import { HttpRest } from '../http/rest';
 import transformer from '../transformer';
 
 export interface ClientOptions {
-    key?:   string;
     cache?: boolean;
     ws?:    boolean;
 }
@@ -17,8 +16,8 @@ export class ClientController {
         servers?: Map<string, ClientServer>;
     };
 
-    constructor(domain: string, options: ClientOptions) {
-        this.auth = { domain, key: options.key };
+    constructor(domain: string, key: string, options: ClientOptions) {
+        this.auth = { domain, key };
         this.cache = {};
         if (options.cache) {
             this.cache.apikeys = new Map<string, APIKey>();
@@ -117,7 +116,8 @@ export class ClientController {
 
 export function createClient(
     domain: string,
+    auth: string,
     options: ClientOptions = {}
 ) {
-    return new ClientController(domain, options);
+    return new ClientController(domain, auth, options);
 }
