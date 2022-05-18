@@ -2,6 +2,15 @@ import { FeatureLimits, Limits } from '../common';
 
 // Structures
 
+export interface Allocation {
+    id:         number;
+    ip:         string;
+    alias:      string | null;
+    port:       number;
+    notes:      string | null;
+    assigned:   boolean;
+}
+
 export interface DaemonData {
     listening:  number;
     sftp:       number;

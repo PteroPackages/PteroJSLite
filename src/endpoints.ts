@@ -9,6 +9,10 @@ export const application = {
         get: (n: number) => `/api/application/nodes/${n}`,
         config: (n: number) => `/api/application/nodes/${n}/configuration`
     },
+    allocations:{
+        main: (n: number) => `/api/application/nodes/${n}/allocations`,
+        get: (n: number, id: number) => `/api/application/nodes/${n}/allocations/${id}`
+    },
     servers:{
         main: () => '/api/application/servers',
         get: (s: number) => `/api/application/servers/${s}`,

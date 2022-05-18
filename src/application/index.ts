@@ -1,5 +1,6 @@
 import { application as app } from '../endpoints';
 import {
+    Allocation,
     AppServer,
     CreateServerOptions,
     CreateUserOptions,
@@ -20,7 +21,7 @@ export interface AppOptions {
 export class AppController {
     public auth: Auth;
     public cache:{
-        allocations?: Map<number, object>;
+        allocations?: Map<number, Allocation>;
         nodes?: Map<number, Node>;
         servers?: Map<number, AppServer>;
         users?: Map<number, User>;
@@ -31,7 +32,7 @@ export class AppController {
         this.cache = {};
 
         if (options.cache) {
-            this.cache.allocations = new Map<number, object>();
+            this.cache.allocations = new Map<number, Allocation>();
             this.cache.nodes = new Map<number, Node>();
             this.cache.servers = new Map<number, AppServer>();
             this.cache.users = new Map<number, User>();
@@ -171,6 +172,60 @@ export class AppController {
     async deleteUser(id: number): Promise<void> {
         await Http._delete(app.users.get(id), this.auth);
         this.cache.users?.delete(id);
+    }
+
+    async getNodes(id?: number, force: boolean = false): Promise<Node | Node[]> {
+        if (id && !force && this.cache.nodes?.has(id))
+            return this.cache.nodes!.get(id);
+
+        const data = await Http.get(
+            id ? app.users.get(id) : app.users.main(),
+            this.auth
+        );
+        const res = id
+            ? transfomer.fromAttributes<Node>(data.attributes)
+            : transfomer.fromData<Node>(data.data);
+
+        if (this.cache.nodes) {
+            Array.isArray(res)
+                ? res.forEach(s => this.cache.nodes.set(s.id, s))
+                : this.cache.nodes.set(res.id, res);
+        }
+        return res;
+    }
+
+    async getAllocations(node: number): Promise<Allocation[]> {
+        const data = await Http.get(app.allocations.main(node), this.auth);
+        return transfomer.fromData(data.data);
+    }
+
+    async getAvailableAllocations(node: number): Promise<Allocation[]> {
+        const data = await this.getAllocations(node);
+        return data.filter(a => !a.assigned);
+    }
+
+    async createAllocation(
+        node: number,
+        ip: string,
+        ports: string[]
+    ): Promise<void> {
+        for (const port of ports) {
+            if (!port.includes('-')) continue;
+            let [_start, _stop] = port.split('-');
+            let start = Number(_start), stop = Number(_stop);
+            if (start > stop) throw new RangeError('Start cannot be greater than stop.');
+            if (start <= 1024 || stop > 65535)
+                throw new RangeError('Port range must be between 1024 and 65535.');
+
+            if (stop - start > 1000)
+                throw new RangeError('Maximum port range exceeded (1000).');
+        }
+
+        await Http.post(app.allocations.main(node), this.auth, { ip, ports });
+    }
+
+    async deleteAllocation(node: number, id: number): Promise<void> {
+        await Http._delete(app.allocations.get(node, id), this.auth);
     }
 }
 
