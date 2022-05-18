@@ -1,6 +1,6 @@
 import { client } from '../endpoints';
 import { Auth } from '../common';
-import { APIKey, ClientServer, ClientUser } from './structs';
+import { Account, APIKey, ClientServer } from './structs';
 import { HttpRest } from '../http/rest';
 import transformer from '../transformer';
 
@@ -25,8 +25,8 @@ export class ClientController {
         }
     }
 
-    async getClient(): Promise<ClientUser> {
-        const data = await HttpRest.get<ClientUser>(client.account.main(), this.auth);
+    async getAccount(): Promise<Account> {
+        const data = await HttpRest.get<Account>(client.account.main(), this.auth);
         return transformer.fromAttributes(data.attributes);
     }
 
