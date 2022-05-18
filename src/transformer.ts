@@ -1,7 +1,7 @@
 import caseConv from './conversions';
 
 function fromAttributes<T>(data: Record<string, any>): T {
-    let res = {} as T;
+    let res = {} as Record<string, any>;
     for (let [k, v] of Object.entries<any>(data)) {
         if (
             typeof v === 'object' &&
@@ -13,7 +13,7 @@ function fromAttributes<T>(data: Record<string, any>): T {
         ) v = Date.parse(v);
         res[caseConv.camelCase(k)] = v ?? undefined;
     }
-    return res;
+    return res as T;
 }
 
 function fromData<T>(data: Record<string, any>[]): T[] {

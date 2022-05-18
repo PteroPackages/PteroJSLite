@@ -27,7 +27,7 @@ export class ClientController {
 
     async getAccount(): Promise<Account> {
         const data = await Http.get<Account>(client.account.main(), this.auth);
-        return transformer.fromAttributes(data.attributes);
+        return transformer.fromAttributes(data.attributes!);
     }
 
     async getTwoFactorURL(): Promise<string> {
@@ -36,8 +36,8 @@ export class ClientController {
     }
 
     async enableTwoFactor(code: string): Promise<string[]> {
-        const data = await Http.post(client.account.tfa(), this.auth, { code });
-        return transformer.fromAttributes<string[]>(data.attributes);
+        const data = await Http.post<any>(client.account.tfa(), this.auth, { code });
+        return transformer.fromAttributes<string[]>(data!.attributes);
     }
 
     async disableTwoFactor(password: string): Promise<void> {
@@ -62,8 +62,8 @@ export class ClientController {
     }
 
     async getAPIKeys(): Promise<APIKey[]> {
-        const data = await Http.get(client.account.apikeys(), this.auth);
-        const res = transformer.fromData<APIKey>(data.data);
+        const data = await Http.get<APIKey>(client.account.apikeys(), this.auth);
+        const res = transformer.fromData<APIKey>(data.data!);
         res.forEach(k => this.cache.apikeys?.set(k.identifier, k));
         return res;
     }
@@ -80,7 +80,7 @@ export class ClientController {
                 allowed_ips: allowedIps
             });
 
-        return transformer.fromAttributes(data.attributes);
+        return transformer.fromAttributes(data!.attributes!);
     }
 
     async deleteAPIKey(id: string): Promise<void> {
@@ -97,17 +97,17 @@ export class ClientController {
             if (s) return Promise.resolve(s);
         }
 
-        const data = await Http.get(
+        const data = await Http.get<ClientServer>(
             id ? client.servers.get(id) : client.servers.main(),
             this.auth
         );
         const res = id
-            ? transformer.fromAttributes<ClientServer>(data.attributes)
-            : transformer.fromData<ClientServer>(data.data);
+            ? transformer.fromAttributes<ClientServer>(data.attributes!)
+            : transformer.fromData<ClientServer>(data.data!);
 
         if (this.cache.servers) {
             Array.isArray(res)
-                ? res.forEach(s => this.cache.servers.set(s.identifier, s))
+                ? res.forEach(s => this.cache.servers!.set(s.identifier, s))
                 : this.cache.servers.set(res.identifier, res);
         }
         return res;

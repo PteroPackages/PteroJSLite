@@ -39,30 +39,32 @@ export class AppController {
         }
     }
 
-    async getServers(id?: number): Promise<AppServer | AppServer[]> {
-        const data = await Http.get(
+    async getServers<T extends number | undefined>(id?: T):
+        Promise<T extends undefined ? AppServer[] : AppServer>
+    {
+        const data = await Http.get<AppServer>(
             id ? app.servers.get(id) : app.servers.main(),
             this.auth
         );
         const res = id
-            ? transfomer.fromAttributes<AppServer>(data.attributes)
-            : transfomer.fromData<AppServer>(data.data);
+            ? transfomer.fromAttributes<AppServer>(data.attributes!)
+            : transfomer.fromData<AppServer>(data.data!);
 
         if (this.cache.servers) {
             Array.isArray(res)
-                ? res.forEach(s => this.cache.servers.set(s.id, s))
+                ? res.forEach(s => this.cache.servers!.set(s.id, s))
                 : this.cache.servers.set(res.id, res);
         }
-        return res;
+        return <any> res;
     }
 
     async createServer(options: CreateServerOptions): Promise<AppServer> {
-        const data = await Http.post(
+        const data = await Http.post<AppServer>(
             app.servers.main(),
             this.auth,
             transfomer.intoJSON(options)
         );
-        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        const res = transfomer.fromAttributes<AppServer>(data!.attributes!);
         this.cache.servers?.set(res.id, res);
         return res;
     }
@@ -71,12 +73,12 @@ export class AppController {
         id: number,
         options: UpdateBuildOptions
     ): Promise<AppServer> {
-        const data = await Http.patch(
+        const data = await Http.patch<AppServer>(
             app.servers.build(id),
             this.auth,
             transfomer.intoJSON(options)
         );
-        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        const res = transfomer.fromAttributes<AppServer>(data!.attributes!);
         this.cache.servers?.set(res.id, res);
         return res;
     }
@@ -85,12 +87,12 @@ export class AppController {
         id: number,
         options: UpdateDetailsOptions
     ): Promise<AppServer> {
-        const data = await Http.patch(
+        const data = await Http.patch<AppServer>(
             app.servers.details(id),
             this.auth,
             transfomer.intoJSON(options)
         );
-        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        const res = transfomer.fromAttributes<AppServer>(data!.attributes!);
         this.cache.servers?.set(res.id, res);
         return res;
     }
@@ -99,12 +101,12 @@ export class AppController {
         id: number,
         options: UpdateStartupOptions
     ): Promise<AppServer> {
-        const data = await Http.patch(
+        const data = await Http.patch<AppServer>(
             app.servers.startup(id),
             this.auth,
             transfomer.intoJSON(options)
         );
-        const res = transfomer.fromAttributes<AppServer>(data.attributes);
+        const res = transfomer.fromAttributes<AppServer>(data!.attributes!);
         this.cache.servers?.set(res.id, res);
         return res;
     }
@@ -117,36 +119,36 @@ export class AppController {
         await Http.post(app.servers.unsuspend(id), this.auth);
     }
 
-    async getUsers(
-        id?: number,
+    async getUsers<T extends number | undefined>(
+        id?: T,
         force: boolean = false
-    ): Promise<User | User[]> {
-        if (!force && this.cache.users?.has(id))
-            return this.cache.users!.get(id);
+    ): Promise<T extends undefined ? User[] : User> {
+        if (id && !force && this.cache.users?.has(id))
+            return <any> this.cache.users!.get(id);
 
-        const data = await Http.get(
+        const data = await Http.get<User>(
             id ? app.users.get(id) : app.users.main(),
             this.auth
         );
         const res = id
-            ? transfomer.fromAttributes<User>(data.attributes)
-            : transfomer.fromData<User>(data.data);
+            ? transfomer.fromAttributes<User>(data.attributes!)
+            : transfomer.fromData<User>(data.data!);
 
         if (this.cache.users) {
             Array.isArray(res)
-                ? res.forEach(s => this.cache.users.set(s.id, s))
+                ? res.forEach(s => this.cache.users!.set(s.id, s))
                 : this.cache.users.set(res.id, res);
         }
-        return res;
+        return <any> res;
     }
 
     async createUser(options: CreateUserOptions): Promise<User> {
-        const data = await Http.post(
+        const data = await Http.post<User>(
             app.users.main(),
             this.auth,
             transfomer.intoJSON(options)
         );
-        const res = transfomer.fromAttributes<User>(data.attributes);
+        const res = transfomer.fromAttributes<User>(data!.attributes!);
         this.cache.users?.set(res.id, res);
         return res;
     }
@@ -159,12 +161,12 @@ export class AppController {
             throw new Error('Not enough options to update the user.');
 
         const user = await this.getUsers(id);
-        const data = await Http.patch(
+        const data = await Http.patch<User>(
             app.users.get(id),
             this.auth,
             transfomer.intoJSON(Object.assign(user, options))
         );
-        const res = transfomer.fromAttributes<User>(data.attributes);
+        const res = transfomer.fromAttributes<User>(data!.attributes!);
         this.cache.users?.set(res.id, res);
         return res;
     }
@@ -174,29 +176,32 @@ export class AppController {
         this.cache.users?.delete(id);
     }
 
-    async getNodes(id?: number, force: boolean = false): Promise<Node | Node[]> {
+    async getNodes<T extends number | undefined>(
+        id?: T,
+        force: boolean = false
+    ): Promise<T extends undefined ? Node[] : Node> {
         if (id && !force && this.cache.nodes?.has(id))
-            return this.cache.nodes!.get(id);
+            return <any> this.cache.nodes!.get(id);
 
-        const data = await Http.get(
+        const data = await Http.get<Node>(
             id ? app.users.get(id) : app.users.main(),
             this.auth
         );
         const res = id
-            ? transfomer.fromAttributes<Node>(data.attributes)
-            : transfomer.fromData<Node>(data.data);
+            ? transfomer.fromAttributes<Node>(data.attributes!)
+            : transfomer.fromData<Node>(data.data!);
 
         if (this.cache.nodes) {
             Array.isArray(res)
-                ? res.forEach(s => this.cache.nodes.set(s.id, s))
+                ? res.forEach(s => this.cache.nodes!.set(s.id, s))
                 : this.cache.nodes.set(res.id, res);
         }
-        return res;
+        return <any> res;
     }
 
     async getAllocations(node: number): Promise<Allocation[]> {
-        const data = await Http.get(app.allocations.main(node), this.auth);
-        return transfomer.fromData(data.data);
+        const data = await Http.get<Allocation>(app.allocations.main(node), this.auth);
+        return transfomer.fromData(data.data!);
     }
 
     async getAvailableAllocations(node: number): Promise<Allocation[]> {

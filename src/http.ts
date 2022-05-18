@@ -24,7 +24,7 @@ export namespace Http {
         method: Method,
         path: string,
         auth: Auth,
-        params: object = null
+        params: any = null
     ): Promise<APIResponse<T> | void> {
         const body = params ? JSON.stringify(params) : undefined;
         return await axios.request({
@@ -44,30 +44,30 @@ export namespace Http {
 
     function handleError(err: AxiosError): never {
         if (!err.status && !err.response) throw new Error(err.message);
-        if (err.response.status >= 500) throw new Error(
+        if (err.response!.status >= 500) throw new Error(
             `Pterodactyl API returned an invalid or unknown response `+
-            `(code: ${err.response.status})`
+            `(code: ${err.response!.status})`
         );
-        formatThrow(err.response.data as APIError);
+        formatThrow(err.response!.data as APIError);
     }
 
     export async function get<T>(path: string, auth: Auth) {
         return await _fetch<T>('GET', path, auth) as APIResponse<T>;
     }
 
-    export async function post<T>(path: string, auth: Auth, params: object = null) {
+    export async function post<T>(path: string, auth: Auth, params: any = null) {
         return await _fetch('POST', path, auth, params) as APIResponse<T> | undefined;
     }
 
-    export async function patch<T>(path: string, auth: Auth, params: object = null) {
+    export async function patch<T>(path: string, auth: Auth, params: any = null) {
         return await _fetch('PATCH', path, auth, params) as APIResponse<T> | undefined;
     }
 
-    export async function put<T>(path: string, auth: Auth, params: object = null) {
+    export async function put<T>(path: string, auth: Auth, params: any = null) {
         return await _fetch('PUT', path, auth, params) as APIResponse<T> | undefined;
     }
 
-    export async function _delete(path: string, auth: Auth, params: object = null) {
+    export async function _delete(path: string, auth: Auth, params: any = null) {
         return await _fetch('DELETE', path, auth, params) as void;
     }
 }

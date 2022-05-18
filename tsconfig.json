@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "alwaysStrict": true,
-        "lib": ["ESNext"],
-        "module": "CommonJS",
+        "lib": ["ES2021"],
         "outDir": "./dist",
-        "pretty": true,
-        "target": "ESNext",
-        "esModuleInterop": true,
-        "resolveJsonModule": true
+        "target": "ES2021",
+        "module": "CommonJS",
+        "noImplicitAny": true,
+        "removeComments": false,
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "moduleResolution": "Node"
     },
     "include": ["./src"],
     "exclude": ["./node_modules"]
