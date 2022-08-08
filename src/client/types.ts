@@ -1,3 +1,5 @@
+import { Limits } from '../common';
+
 export interface Account {
     id:         number;
     admin:      boolean;
@@ -26,6 +28,28 @@ export interface APIKey {
     allowedIps:     string[];
     createdAt:      number;
     lastUsedAt:     number;
+}
+
+export interface ClientServer {
+    serverOwner:    boolean;
+    identifier:     string;
+    internalId:     number;
+    uuid:           string;
+    name:           string;
+    node:           string;
+    sftpDetails:{
+        ip:         string;
+        port:       number;
+    }
+    description:    string | null;
+    limits:         Limits;
+    invocation:     string;
+    dockerImage:    string;
+    eggFeatures:    string[] | null;
+    status:         string | null;
+    isSuspended:    boolean;
+    isInstalling:   boolean;
+    isTransferring: boolean;
 }
 
 export interface PermissionDescriptor {

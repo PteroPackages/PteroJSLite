@@ -4,6 +4,7 @@ import {
     Account,
     Activity,
     APIKey,
+    ClientServer,
     PermissionDescriptor,
     SSHKey,
     TwoFactorData
@@ -129,6 +130,22 @@ class ClientController {
             this.auth,
             { fingerprint }
         );
+    }
+
+    async getServers(): Promise<ClientServer[]>;
+    async getServers(id: string): Promise<ClientServer>;
+    async getServers(arg: any = null): Promise<any> {
+        if (arg) {
+            const data = await http.get<FractalItem<ClientServer>>(
+                routes.servers.get(arg), this.auth
+            );
+            return conv.toCamelCase(data!.attributes);
+        }
+
+        const data = await http.get<FractalData<ClientServer>>(
+            routes.servers.main(), this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
 }
 

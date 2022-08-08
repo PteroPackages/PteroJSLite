@@ -55,7 +55,7 @@ export const client = {
         }
     },
     servers:{
-        main: () => '/api/client/servers',
+        main: () => '/api/client',
         get: (s: string) => `/api/client/servers/${s}`,
         databases:{
             main: (s: string) => `/api/client/servers/${s}/databases`,
