@@ -7,6 +7,10 @@ export { createApp } from './app';
 export * from './app/options';
 export * from './app/types';
 
+// Client API
+export { createClient } from './client';
+export * from './client/types';
+
 // HTTPS
 export { default as http } from './http';
 
