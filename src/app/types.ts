@@ -33,8 +33,8 @@ export interface Egg {
         container:      string;
         extends:        string | null;
     }
-    createdAt:          number;
-    updatedAt:          number;
+    createdAt:          string;
+    updatedAt:          string | null;
 }
 
 export interface Nest {
@@ -43,8 +43,8 @@ export interface Nest {
     author:         string;
     name:           string;
     description:    string;
-    createdAt:      number;
-    updatedAt:      number;
+    createdAt:      string;
+    updatedAt:      string | null;
 }
 
 export interface Node {
@@ -70,8 +70,8 @@ export interface Node {
         memory:         number;
         disk:           number;
     }
-    createdAt:          number;
-    updatedAt:          number;
+    createdAt:          string;
+    updatedAt:          string | null;
 }
 
 export interface NodeConfig {
@@ -114,8 +114,8 @@ export interface AppServer {
     nest:           number;
     egg:            number;
     container:      Container;
-    createdAt:      number;
-    updatedAt:      number;
+    createdAt:      string;
+    updatedAt:      string | null;
 }
 
 export interface User {
@@ -130,8 +130,8 @@ export interface User {
     language:   string;
     rootAdmin:  boolean;
     '2fa':      boolean;
-    createdAt:  number;
-    updatedAt:  number | null;
+    createdAt:  string;
+    updatedAt:  string | null;
 }
 
 export interface Container {
