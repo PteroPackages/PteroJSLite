@@ -1,6 +1,13 @@
 import { Auth, FractalData, FractalItem } from '../common';
 import { client as routes } from '../routes';
-import { Account, APIKey, PermissionDescriptor, TwoFactorData } from './types';
+import {
+    Account,
+    Activity,
+    APIKey,
+    PermissionDescriptor,
+    SSHKey,
+    TwoFactorData
+} from './types';
 import conv from '../conversions';
 import http from '../http';
 
@@ -69,6 +76,13 @@ class ClientController {
         );
     }
 
+    async getActivities(): Promise<Activity[]> {
+        const data = await http.get<FractalData<Activity>>(
+            routes.account.activity(), this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
     async getAPIKeys(): Promise<APIKey[]> {
         const data = await http.get<FractalData<APIKey>>(
             routes.account.apikeys.main(), this.auth
@@ -90,6 +104,31 @@ class ClientController {
 
     async deleteAPIKey(id: string): Promise<void> {
         return http.delete(routes.account.apikeys.get(id), this.auth);
+    }
+
+    async getSSHKeys(): Promise<SSHKey[]> {
+        const data = await http.get<FractalData<SSHKey>>(
+            routes.account.sshkeys.main(),
+            this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async createSSHKey(name: string, publicKey: string): Promise<SSHKey> {
+        const data = await http.post<FractalItem<SSHKey>>(
+            routes.account.sshkeys.main(),
+            this.auth,
+            { name, public_key: publicKey }
+        );
+        return conv.toCamelCase(data!.attributes);
+    }
+
+    async removeSSHKey(fingerprint: string): Promise<void> {
+        return http.post(
+            routes.account.sshkeys.remove(),
+            this.auth,
+            { fingerprint }
+        );
     }
 }
 

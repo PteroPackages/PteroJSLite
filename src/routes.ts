@@ -44,13 +44,13 @@ export const client = {
         tfa: () => '/api/client/account/two-factor',
         email: () => '/api/client/account/email',
         password: () => '/api/client/account/password',
+        activity: () => '/api/client/account/activity',
         apikeys:{
             main: () => '/api/client/account/api-keys',
             get: (id: string) => `/api/client/account/api-keys/${id}`
         },
         sshkeys:{
             main: () => '/api/client/account/ssh-keys',
-            get: (id: string) => `/api/client/account/ssh-keys/${id}`,
             remove: () => '/api/client/account/ssh-keys/remove'
         }
     },
