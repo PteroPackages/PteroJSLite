@@ -1,4 +1,5 @@
 import { Auth, FractalData, FractalItem } from '../common';
+import { CreateUserOptions, UpdateUserOptions } from './options';
 import { application as routes } from '../routes';
 import { User } from './types';
 import conv from '../conversions';
@@ -28,6 +29,28 @@ class AppController {
 
         const data = await http.get<FractalData<User>>(path, this.auth);
         return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async createUser(options: CreateUserOptions): Promise<User> {
+        const data = await http.post<FractalItem<User>>(
+            routes.users.main(),
+            this.auth,
+            conv.toSnakeCase(options)
+        );
+        return conv.toCamelCase(data!.attributes);
+    }
+
+    async updateUser(id: number, options: UpdateUserOptions): Promise<User> {
+        const data = await http.patch<FractalItem<User>>(
+            routes.users.get(id),
+            this.auth,
+            conv.toSnakeCase(options)
+        );
+        return conv.toCamelCase(data!.attributes);
+    }
+
+    async deleteUser(id: number): Promise<void> {
+        return http.delete(routes.users.get(id), this.auth);
     }
 }
 
