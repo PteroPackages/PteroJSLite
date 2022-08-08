@@ -21,8 +21,8 @@ function camelCase(str: string): string {
     return res;
 }
 
-function toCamelCase(obj: object, options: ConvertOptions = {}): object {
-    const parsed: Record<string, object> = {};
+function toCamelCase<T>(obj: object, options: ConvertOptions = {}): T {
+    const parsed = {} as any;
 
     for (let [k, v] of Object.entries(obj)) {
         if (options.ignore?.includes(k)) continue;
@@ -30,7 +30,7 @@ function toCamelCase(obj: object, options: ConvertOptions = {}): object {
         parsed[camelCase(k)] = v;
     }
 
-    return parsed;
+    return <T> parsed;
 }
 
 function snakeCase(str: string): string {
@@ -46,8 +46,8 @@ function snakeCase(str: string): string {
     return res;
 }
 
-function toSnakeCase(obj: object, options: ConvertOptions = {}): object {
-    const parsed: Record<string, object> = {};
+function toSnakeCase<T>(obj: object, options: ConvertOptions = {}): T {
+    const parsed = {} as any;
 
     for (let [k, v] of Object.entries(obj)) {
         if (options.ignore?.includes(k)) continue;
@@ -55,7 +55,7 @@ function toSnakeCase(obj: object, options: ConvertOptions = {}): object {
         parsed[snakeCase(k)] = v;
     }
 
-    return parsed;
+    return <T> parsed;
 }
 
 export default {
