@@ -82,9 +82,10 @@ function _put<R>(
 
 function _delete(
     path: string,
-    auth: Auth
+    auth: Auth,
+    body: any = undefined
 ): Promise<void> {
-    return _fetch('DELETE', auth.domain + path, auth.key, undefined, false);
+    return _fetch('DELETE', auth.domain + path, auth.key, body, false);
 }
 
 export default {

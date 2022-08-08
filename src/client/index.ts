@@ -46,7 +46,27 @@ class ClientController {
     }
 
     async disableTwoFactor(password: string): Promise<void> {
-        return http.delete(routes.account.tfa(), this.auth);
+        return http.delete(routes.account.tfa(), this.auth, { password });
+    }
+
+    async updateEmail(email: string, password: string): Promise<void> {
+        return http.put(
+            routes.account.email(),
+            this.auth,
+            { email, password }
+        );
+    }
+
+    async updatePassword(oldPass: string, newPass: string): Promise<void> {
+        return http.put(
+            routes.account.password(),
+            this.auth,
+            {
+                current_password: oldPass,
+                password: newPass,
+                password_confirmation: newPass
+            }
+        );
     }
 
     async getAPIKeys(): Promise<APIKey[]> {
@@ -54,6 +74,22 @@ class ClientController {
             routes.account.apikeys.main(), this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async createAPIKey(
+        description: string,
+        allowedIps: string[] = []
+    ): Promise<APIKey> {
+        const data = await http.post<FractalItem<APIKey>>(
+            routes.account.apikeys.main(),
+            this.auth,
+            { description, allowed_ips: allowedIps }
+        );
+        return conv.toCamelCase(data!.attributes);
+    }
+
+    async deleteAPIKey(id: string): Promise<void> {
+        return http.delete(routes.account.apikeys.get(id), this.auth);
     }
 }
 
