@@ -30,6 +30,8 @@ export interface APIKey {
     lastUsedAt:     number;
 }
 
+export type ChmodData = { file: string; mode: number }[];
+
 export interface ClientServer {
     serverOwner:    boolean;
     identifier:     string;
@@ -53,6 +55,18 @@ export interface ClientServer {
     isTransferring: boolean;
 }
 
+export interface File {
+    name:       string;
+    mode:       string;
+    modeBits:   string;
+    size:       number;
+    isFile:     boolean;
+    isSymlink:  boolean;
+    mimetype:   string;
+    createdAt:  string;
+    modifiedAt: string | null;
+}
+
 export interface PermissionDescriptor {
     description:    string;
     keys:           Record<string, string>;
@@ -64,6 +78,16 @@ export enum PowerSignal {
     RESTART = 'restart',
     KILL    = 'kill'
 }
+
+export interface PullFileOptions {
+    url:            string;
+    directory?:     string;
+    filename?:      string;
+    useHeader?:     boolean;
+    foreground?:    boolean;
+}
+
+export type RenameData = { from: string; to: string }[];
 
 export interface ResourceUsage {
     memoryBytes:    number;

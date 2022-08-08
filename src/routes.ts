@@ -64,15 +64,17 @@ export const client = {
         },
         files:{
             main: (s: string) => `/api/client/servers/${s}/files/list`,
-            contents: (s: string, f: number) => `/api/client/servers/${s}/files/contents?file=${f}`,
-            download: (s: string, f: number) => `/api/client/servers/${s}/files/download?file=${f}`,
+            contents: (s: string, f: string) => `/api/client/servers/${s}/files/contents?file=${f}`,
+            download: (s: string, f: string) => `/api/client/servers/${s}/files/download?file=${f}`,
             rename: (s: string) => `/api/client/servers/${s}/files/rename`,
             copy: (s: string) => `/api/client/servers/${s}/files/copy`,
-            write: (s: string, f: number) => `/api/client/servers/${s}/files/write?file=${f}`,
+            write: (s: string, f: string) => `/api/client/servers/${s}/files/write?file=${f}`,
             compress: (s: string) => `/api/client/servers/${s}/files/compress`,
             decompress: (s: string) => `/api/client/servers/${s}/files/decompress`,
             delete: (s: string) => `/api/client/servers/${s}/files/delete`,
             create: (s: string) => `/api/client/servers/${s}/files/create-folder`,
+            chmod: (s: string) => `/api/client/servers/${s}/files/chmod`,
+            pull: (s: string) => `/api/client/servers/${s}/files/pull`,
             upload: (s: string) => `/api/client/servers/${s}/files/upload`
         },
         schedules:{
