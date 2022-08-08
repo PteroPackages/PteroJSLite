@@ -15,3 +15,13 @@ export interface APIKey {
     createdAt:      number;
     lastUsedAt:     number;
 }
+
+export interface PermissionDescriptor {
+    description:    string;
+    keys:           Record<string, string>;
+}
+
+export interface TwoFactorData {
+    imageURLData:   string;
+    secret:         string;
+}
