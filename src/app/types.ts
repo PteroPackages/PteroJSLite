@@ -9,10 +9,42 @@ export interface Allocation {
     assigned:   boolean;
 }
 
-export interface DaemonData {
-    listening:  number;
-    sftp:       number;
-    base:       string;
+export interface Egg {
+    id:                 number;
+    uuid:               string;
+    name:               string;
+    author:             string;
+    description:        string;
+    dockerImage:        string;
+    dockerImages:       Record<string, string>;
+    config:{
+        files:          Record<string, Record<string, any>> | [];
+        startup:        Record<string, string>;
+        stop:           string;
+        logs:           Record<string, string> | [];
+        fileDenylist:   string[];
+        extends:        string | null;
+    }
+    startup:            string;
+    script:{
+        privileged:     boolean;
+        install:        string;
+        entry:          string;
+        container:      string;
+        extends:        string | null;
+    }
+    createdAt:          number;
+    updatedAt:          number;
+}
+
+export interface Nest {
+    id:             number;
+    uuid:           string;
+    author:         string;
+    name:           string;
+    description:    string;
+    createdAt:      number;
+    updatedAt:      number;
 }
 
 export interface Node {

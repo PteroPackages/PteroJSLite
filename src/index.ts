@@ -4,6 +4,7 @@ export const version = v;
 
 // Application API
 export { createApp } from './app';
+export * from './app/options';
 export * from './app/types';
 
 // HTTPS

@@ -8,7 +8,7 @@ import {
     UpdateUserOptions
 } from './options';
 import { application as routes } from '../routes';
-import { AppServer, Node, NodeConfig, User } from './types';
+import { AppServer, Egg, Nest, Node, NodeConfig, User } from './types';
 import conv from '../conversions';
 import http from '../http';
 
@@ -170,6 +170,38 @@ class AppController {
 
     async deleteNode(id: number): Promise<void> {
         return http.delete(routes.nodes.get(id), this.auth);
+    }
+
+    async getNests(): Promise<Nest[]>;
+    async getNests(id: number): Promise<Nest>;
+    async getNests(arg: any = null): Promise<any> {
+        if (arg) {
+            const data = await http.get<FractalItem<Nest>>(
+                routes.nests.get(arg), this.auth
+            );
+            return conv.toCamelCase(data!.attributes);
+        }
+
+        const data = await http.get<FractalData<Nest>>(
+            routes.nests.main(), this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async getEggs(nest: number): Promise<Egg[]>;
+    async getEggs(nest: number, id: number): Promise<Egg>;
+    async getEggs(nest: number, arg: any = null): Promise<any> {
+        if (arg) {
+            const data = await http.get<FractalItem<Egg>>(
+                routes.nests.eggs.get(nest, arg), this.auth
+            );
+            return conv.toCamelCase(data!.attributes);
+        }
+
+        const data = await http.get<FractalData<Egg>>(
+            routes.nests.eggs.main(nest), this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
 }
 
