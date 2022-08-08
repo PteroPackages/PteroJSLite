@@ -1,4 +1,4 @@
-interface ConvertOptions {
+export interface ConvertOptions {
     ignore?:    string[];
     map?:       Record<string, string>;
 }
@@ -59,8 +59,6 @@ function toSnakeCase(obj: object, options: ConvertOptions = {}): object {
 }
 
 export default {
-    camelCase,
-    snakeCase,
     toCamelCase,
     toSnakeCase
 }

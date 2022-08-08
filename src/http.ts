@@ -1,73 +1,97 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { Auth, APIError, APIResponse, Method } from './common';
-import { version } from '../package.json';
+import { APIError, Auth, Method } from './common';
+import { version } from '.';
 
-export function formatThrow({ errors }: APIError): never {
-    const fmt = '\n'+ errors
-        .map(e => `- ${e.code}: ${e.detail || 'No details provided'}`)
-        .join('\n');
+function getHeaders(
+    key: string | undefined,
+    text: boolean
+): Record<string, string> {
+    let h: Record<string, string> = {
+        'User-Agent': `PteroJSLite ${version}`,
+        'Content-Type': text ? 'text/plain' : 'application/json',
+        'Accept': 'application/json,text/plain'
+    }
+    if (key) h['Authorization'] = `Bearer ${key}`;
 
-    throw new Error(fmt);
+    return h;
 }
 
-export namespace Http {
-    function getHeaders(key: string): Record<string, string> {
-        return {
-            'User-Agent': `PteroJSLite ${version}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${key}`
-        };
-    }
-
-    export async function _fetch<T>(
-        method: Method,
-        path: string,
-        auth: Auth,
-        params: any = null
-    ): Promise<APIResponse<T> | void> {
-        const body = params ? JSON.stringify(params) : undefined;
-        return await axios.request({
-            url: auth.domain + path,
-            method,
-            headers: getHeaders(auth.key),
-            data: body
+async function _fetch<R>(
+    method: Method,
+    url: string,
+    key: string | undefined,
+    body: any,
+    text: boolean
+): Promise<R | void> {
+    body &&= JSON.stringify(body);
+    return await axios.request({
+        method,
+        url,
+        headers: getHeaders(key, text),
+        data: body
+    })
+        .then((res: AxiosResponse<R | void>) => {
+            if (res.status === 204) return;
+            return <R> res.data;
         })
-            .then(handleResponse)
-            .catch(handleError);
-    }
+        .catch((err: AxiosError<APIError>) => {
+            if (!err.status && !err.response) throw err;
+            let fmt = '\n' + err.response!.data.errors
+                .map(e => `- ${e.code} (${e.status}): ${
+                    e.detail || 'No details provided'
+                }`)
+                .join('\n');
 
-    function handleResponse(res: AxiosResponse): any | void {
-        if ([202, 204].includes(res.status)) return;
-        return res.data;
-    }
+            throw new Error(fmt);
+        });
+}
 
-    function handleError(err: AxiosError): never {
-        if (!err.status && !err.response) throw new Error(err.message);
-        if (err.response!.status >= 500) throw new Error(
-            `Pterodactyl API returned an invalid or unknown response `+
-            `(code: ${err.response!.status})`
-        );
-        formatThrow(err.response!.data as APIError);
-    }
+function _get<R>(
+    path: string,
+    auth: Auth,
+    body: any = undefined,
+    text: boolean = false
+): Promise<R | void> {
+    return _fetch('GET', auth.domain + path, auth.key, body, text);
+}
 
-    export async function get<T>(path: string, auth: Auth) {
-        return await _fetch<T>('GET', path, auth) as APIResponse<T>;
-    }
+function _post<R>(
+    path: string,
+    auth: Auth,
+    body: any = undefined,
+    text: boolean = false
+): Promise<R | void> {
+    return _fetch('POST', auth.domain + path, auth.key, body, text);
+}
 
-    export async function post<T>(path: string, auth: Auth, params: any = null) {
-        return await _fetch('POST', path, auth, params) as APIResponse<T> | undefined;
-    }
+function _patch<R>(
+    path: string,
+    auth: Auth,
+    body: any = undefined
+): Promise<R | void> {
+    return _fetch('PATCH', auth.domain + path, auth.key, body, false);
+}
 
-    export async function patch<T>(path: string, auth: Auth, params: any = null) {
-        return await _fetch('PATCH', path, auth, params) as APIResponse<T> | undefined;
-    }
+function _put<R>(
+    path: string,
+    auth: Auth,
+    body: any = undefined
+): Promise<R | void> {
+    return _fetch('PUT', auth.domain + path, auth.key, body, false);
+}
 
-    export async function put<T>(path: string, auth: Auth, params: any = null) {
-        return await _fetch('PUT', path, auth, params) as APIResponse<T> | undefined;
-    }
+function _delete(
+    path: string,
+    auth: Auth
+): Promise<void> {
+    return _fetch('DELETE', auth.domain + path, auth.key, undefined, false);
+}
 
-    export async function _delete(path: string, auth: Auth, params: any = null) {
-        return await _fetch('DELETE', path, auth, params) as void;
-    }
+export default {
+    _fetch,
+    get: _get,
+    post: _post,
+    patch: _patch,
+    put: _put,
+    delete: _delete
 }
