@@ -8,7 +8,7 @@ import {
     UpdateUserOptions
 } from './options';
 import { application as routes } from '../routes';
-import { AppServer, User } from './types';
+import { AppServer, Node, NodeConfig, User } from './types';
 import conv from '../conversions';
 import http from '../http';
 
@@ -68,7 +68,9 @@ class AppController {
             switch (typeof arg) {
                 case 'number': path = routes.servers.get(arg); break;
                 case 'string': path = routes.servers.ext(arg); break;
-                default: throw new TypeError(`expected number or string; got ${typeof arg}`);
+                default: throw new TypeError(
+                    `expected number or string; got ${typeof arg}`
+                );
             }
 
             const data = await http.get<FractalItem<AppServer>>(path, this.auth);
@@ -141,6 +143,33 @@ class AppController {
     async deleteServer(id: number, force: boolean = false): Promise<void> {
         if (force) return http.delete(routes.servers.get(id) + '/force', this.auth);
         return http.delete(routes.servers.get(id), this.auth);
+    }
+
+    async getNodes(): Promise<Node[]>;
+    async getNodes(id: number): Promise<Node>;
+    async getNodes(arg: any = null): Promise<any> {
+        if (arg) {
+            const data = await http.get<FractalItem<Node>>(
+                routes.nodes.get(arg), this.auth
+            );
+            return conv.toCamelCase(data!.attributes);
+        }
+
+        const data = await http.get<FractalData<Node>>(
+            routes.nodes.main(), this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async getNodeConfig(id: number): Promise<NodeConfig> {
+        const data = await http.get<NodeConfig>(
+            routes.nodes.config(id), this.auth
+        );
+        return conv.toCamelCase(data!);
+    }
+
+    async deleteNode(id: number): Promise<void> {
+        return http.delete(routes.nodes.get(id), this.auth);
     }
 }
 

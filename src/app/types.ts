@@ -31,7 +31,39 @@ export interface Node {
     disk:               number;
     diskOverallocate:   number;
     uploadSize:         number;
-    daemon:             DaemonData;
+    daemonListen:       number;
+    daemonSftp:         number;
+    daemonBase:         string;
+    allocatedResources:{
+        memory:         number;
+        disk:           number;
+    }
+    createdAt:          number;
+    updatedAt:          number;
+}
+
+export interface NodeConfig {
+    debug:              boolean;
+    uuid:               string;
+    tokenId:            string;
+    token:              string;
+    api:{
+        host:           string;
+        port:           number;
+        ssl:{
+            enabled:    boolean;
+            cert:       string;
+            key:        string;
+        }
+        uploadLimit:    number;
+    }
+    system:{
+        data:           string;
+        sftp:{
+            bindPort:   number;
+        }
+    }
+    remote:             string;
 }
 
 export interface AppServer {
