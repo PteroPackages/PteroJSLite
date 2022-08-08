@@ -1,6 +1,10 @@
 /node_modules
 /dist
 /test
+/types
+
+*.cmd
+*.sh
+*.test.*
 
 package-lock.json
-*.test.*

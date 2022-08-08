@@ -3,13 +3,18 @@
         "lib": ["ES2021"],
         "outDir": "./dist",
         "target": "ES2021",
+        "declaration": true,
         "module": "CommonJS",
         "noImplicitAny": true,
         "removeComments": false,
         "strictNullChecks": true,
         "resolveJsonModule": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
+        "declarationDir": "./types"
     },
     "include": ["./src"],
-    "exclude": ["./node_modules"]
+    "exclude": [
+        "./node_modules",
+        "./test"
+    ]
 }

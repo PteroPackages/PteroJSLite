@@ -2,13 +2,29 @@
   "name": "@devnote-dev/pterojslite",
   "version": "0.0.1",
   "description": "A lightweight version of the PteroJS package",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": "Devonte W <https://github.com/devnote-dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PteroPackages/PteroJSLite/issues"
   },
+  "homepage": "https://github.com/PteroPackages/PteroJSLite#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PteroPackages/PteroJSLite.git"
+  },
+  "main": "./dist/index.js",
+  "types": "./types",
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14.16"
+  },
+  "scripts": {
+    "build": "tsc"
   },
   "keywords": [
     "pterojs",
@@ -16,16 +32,10 @@
     "pterodactyl-api",
     "wrapper"
   ],
-  "author": "Devonte <https://github.com/devnote-dev>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/PteroPackages/PteroJSLite/issues"
-  },
-  "homepage": "https://github.com/PteroPackages/PteroJSLite#readme",
   "dependencies": {
     "axios": "^0.27.2"
   },
   "devDependencies": {
-    "typescript": "^4.6.4"
+    "typescript": "^4.7.4"
   }
 }
