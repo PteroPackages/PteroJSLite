@@ -6,8 +6,11 @@ import {
     APIKey,
     ClientServer,
     PermissionDescriptor,
+    PowerSignal,
+    Resources,
     SSHKey,
-    TwoFactorData
+    TwoFactorData,
+    WebSocketAuth
 } from './types';
 import conv from '../conversions';
 import http from '../http';
@@ -146,6 +149,43 @@ class ClientController {
             routes.servers.main(), this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async getServerWebsocketAuth(id: string): Promise<WebSocketAuth> {
+        const data = await http.get<{ data: WebSocketAuth }>(
+            routes.servers.ws(id), this.auth
+        );
+        return conv.toCamelCase(data!.data);
+    }
+
+    async getServerResources(id: string): Promise<Resources> {
+        const data = await http.get<FractalItem<Resources>>(
+            routes.servers.resources(id), this.auth
+        );
+        return conv.toCamelCase(data!.attributes);
+    }
+
+    async getServerActivities(id: string): Promise<Activity[]> {
+        const data = await http.get<FractalData<Activity>>(
+            routes.servers.activity(id), this.auth
+        );
+        return data!.data.map(d => conv.toCamelCase(d.attributes));
+    }
+
+    async sendServerCommand(id: string, command: string): Promise<void> {
+        return http.post(
+            routes.servers.command(id),
+            this.auth,
+            { command }
+        );
+    }
+
+    async setServerPowerState(id: string, signal: PowerSignal): Promise<void> {
+        return http.post(
+            routes.servers.power(id),
+            this.auth,
+            { signal }
+        );
     }
 }
 

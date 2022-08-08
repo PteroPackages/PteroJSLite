@@ -1,4 +1,4 @@
-import { Limits } from '../common';
+import { FeatureLimits, Limits } from '../common';
 
 export interface Account {
     id:         number;
@@ -43,6 +43,7 @@ export interface ClientServer {
     }
     description:    string | null;
     limits:         Limits;
+    featureLimits:  FeatureLimits;
     invocation:     string;
     dockerImage:    string;
     eggFeatures:    string[] | null;
@@ -57,6 +58,28 @@ export interface PermissionDescriptor {
     keys:           Record<string, string>;
 }
 
+export enum PowerSignal {
+    START   = 'start',
+    STOP    = 'stop',
+    RESTART = 'restart',
+    KILL    = 'kill'
+}
+
+export interface ResourceUsage {
+    memoryBytes:    number;
+    diskBytes:      number;
+    cpuAbsolute:    number;
+    networkRxBytes: number;
+    networkTxBytes: number;
+    uptime:         number;
+}
+
+export interface Resources {
+    currentState:   string;
+    suspended:      boolean;
+    resources:      ResourceUsage;
+}
+
 export interface SSHKey {
     name:           string;
     fingerprint:    string;
@@ -67,4 +90,9 @@ export interface SSHKey {
 export interface TwoFactorData {
     imageURLData:   string;
     secret:         string;
+}
+
+export interface WebSocketAuth {
+    socket: string;
+    token:  string;
 }

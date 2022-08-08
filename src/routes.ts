@@ -107,6 +107,7 @@ export const client = {
         },
         ws: (s: string) => `/api/client/servers/${s}/websocket`,
         resources: (s: string) => `/api/client/servers/${s}/resources`,
+        activity: (s: string) => `/api/client/servers/${s}/activity`,
         command: (s: string) => `/api/client/servers/${s}/command`,
         power: (s: string) => `/api/client/servers/${s}/power`
     },
