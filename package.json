@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "prettier --write src/**.ts"
+    "lint": "prettier --write src/**/**.ts"
   },
   "keywords": [
     "pterojs",
