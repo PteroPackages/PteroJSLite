@@ -68,11 +68,11 @@ export function createApp(domain: string, key: string): Application {
                 }
 
                 const data = await http.get<FractalItem<User>>(path, this.auth);
-                return conv.toCamelCase(data!.attributes);
+                return conv.toCamelCase(data.attributes);
             }
 
             const data = await http.get<FractalData<User>>(path, this.auth);
-            return data!.data.map(d => conv.toCamelCase(d.attributes));
+            return data.data.map(d => conv.toCamelCase(d.attributes));
         },
 
         async createUser(options) {
@@ -81,7 +81,7 @@ export function createApp(domain: string, key: string): Application {
                 this.auth,
                 conv.toSnakeCase(options)
             );
-            return conv.toCamelCase(data!.attributes);
+            return conv.toCamelCase(data.attributes);
         },
 
         async updateUser(id, options) {
@@ -90,7 +90,7 @@ export function createApp(domain: string, key: string): Application {
                 this.auth,
                 conv.toSnakeCase(options)
             );
-            return conv.toCamelCase(data!.attributes);
+            return conv.toCamelCase(data.attributes);
         },
 
         deleteUser(id) {
@@ -117,7 +117,7 @@ export function createApp(domain: string, key: string): Application {
                     path,
                     this.auth
                 );
-                return conv.toCamelCase(data!.attributes, {
+                return conv.toCamelCase(data.attributes, {
                     pass: ['environment'],
                 });
             }
@@ -137,7 +137,7 @@ export function createApp(domain: string, key: string): Application {
                 this.auth,
                 conv.toSnakeCase(options)
             );
-            return conv.toCamelCase(data!.attributes);
+            return conv.toCamelCase(data.attributes);
         },
 
         async updateServerDetails(id, options) {
@@ -146,7 +146,7 @@ export function createApp(domain: string, key: string): Application {
                 this.auth,
                 conv.toSnakeCase(options)
             );
-            return conv.toCamelCase(data!.attributes);
+            return conv.toCamelCase(data.attributes);
         },
 
         async updateServerBuild(id, options) {
@@ -155,7 +155,7 @@ export function createApp(domain: string, key: string): Application {
                 this.auth,
                 conv.toSnakeCase(options)
             );
-            return conv.toCamelCase(data!.attributes);
+            return conv.toCamelCase(data.attributes);
         },
 
         async updateServerStartup(id, options) {
@@ -164,7 +164,7 @@ export function createApp(domain: string, key: string): Application {
                 this.auth,
                 conv.toSnakeCase(options)
             );
-            return conv.toCamelCase(data!.attributes);
+            return conv.toCamelCase(data.attributes);
         },
 
         suspendServer(id) {
@@ -194,14 +194,14 @@ export function createApp(domain: string, key: string): Application {
                     routes.nodes.get(arg as number),
                     this.auth
                 );
-                return conv.toCamelCase(data!.attributes);
+                return conv.toCamelCase(data.attributes);
             }
 
             const data = await http.get<FractalData<Node>>(
                 routes.nodes.main(),
                 this.auth
             );
-            return data!.data.map(d => conv.toCamelCase(d.attributes));
+            return data.data.map(d => conv.toCamelCase(d.attributes));
         },
 
         async getNodeConfig(id) {
@@ -209,7 +209,7 @@ export function createApp(domain: string, key: string): Application {
                 routes.nodes.config(id),
                 this.auth
             );
-            return conv.toCamelCase(data!);
+            return conv.toCamelCase(data);
         },
 
         deleteNode(id) {
@@ -222,14 +222,14 @@ export function createApp(domain: string, key: string): Application {
                     routes.nests.get(arg as number),
                     this.auth
                 );
-                return conv.toCamelCase(data!.attributes);
+                return conv.toCamelCase(data.attributes);
             }
 
             const data = await http.get<FractalData<Nest>>(
                 routes.nests.main(),
                 this.auth
             );
-            return data!.data.map(d => conv.toCamelCase(d.attributes));
+            return data.data.map(d => conv.toCamelCase(d.attributes));
         },
 
         async getEggs(nest, arg = undefined) {
@@ -238,14 +238,14 @@ export function createApp(domain: string, key: string): Application {
                     routes.nests.eggs.get(nest, arg as number),
                     this.auth
                 );
-                return conv.toCamelCase(data!.attributes);
+                return conv.toCamelCase(data.attributes);
             }
 
             const data = await http.get<FractalData<Egg>>(
                 routes.nests.eggs.main(nest),
                 this.auth
             );
-            return data!.data.map(d => conv.toCamelCase(d.attributes));
+            return data.data.map(d => conv.toCamelCase(d.attributes));
         },
     };
 

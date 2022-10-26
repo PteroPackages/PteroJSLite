@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { APIError, Auth, Method } from './common';
 import { version } from '.';
 
@@ -22,19 +22,16 @@ async function _fetch<R>(
     key: string | undefined,
     body: any,
     text: boolean
-): Promise<R | void> {
+): Promise<R> {
     body &&= JSON.stringify(body);
     return axios
-        .request({
+        .request<R>({
             method,
             url,
             headers: getHeaders(key, text),
             data: body,
         })
-        .then((res: AxiosResponse<R | void>) => {
-            if (res.status === 204) return;
-            return <R>res.data;
-        })
+        .then(res => res.data)
         .catch((err: AxiosError<APIError>) => {
             if (!err.status && !err.response) throw err;
             let fmt =
@@ -57,7 +54,7 @@ function _get<R>(
     auth: Auth,
     body: any = undefined,
     text: boolean = false
-): Promise<R | void> {
+): Promise<R> {
     return _fetch('GET', auth.domain + path, auth.key, body, text);
 }
 
@@ -66,7 +63,7 @@ function _post<R>(
     auth: Auth,
     body: any = undefined,
     text: boolean = false
-): Promise<R | void> {
+): Promise<R> {
     return _fetch('POST', auth.domain + path, auth.key, body, text);
 }
 
@@ -74,7 +71,7 @@ function _patch<R>(
     path: string,
     auth: Auth,
     body: any = undefined
-): Promise<R | void> {
+): Promise<R> {
     return _fetch('PATCH', auth.domain + path, auth.key, body, false);
 }
 
@@ -82,7 +79,7 @@ function _put<R>(
     path: string,
     auth: Auth,
     body: any = undefined
-): Promise<R | void> {
+): Promise<R> {
     return _fetch('PUT', auth.domain + path, auth.key, body, false);
 }
 
