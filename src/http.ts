@@ -75,11 +75,7 @@ function _patch<R>(
     return _fetch('PATCH', auth.domain + path, auth.key, body, false);
 }
 
-function _put<R>(
-    path: string,
-    auth: Auth,
-    body: any = undefined
-): Promise<R> {
+function _put<R>(path: string, auth: Auth, body: any = undefined): Promise<R> {
     return _fetch('PUT', auth.domain + path, auth.key, body, false);
 }
 

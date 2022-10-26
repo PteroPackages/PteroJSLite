@@ -63,7 +63,7 @@ export function createClient(domain: string, key: string): Client {
     const impl = <IClient>{
         async getPermissions() {
             const data = await http.get<
-                FractalItem<{ permissions: PermissionDescriptor; }>
+                FractalItem<{ permissions: PermissionDescriptor }>
             >(routes.permissions(), this.auth);
             return data.attributes.permissions;
         },
@@ -100,7 +100,10 @@ export function createClient(domain: string, key: string): Client {
         },
 
         updateEmail(email, password) {
-            return http.put(routes.account.email(), this.auth, { email, password });
+            return http.put(routes.account.email(), this.auth, {
+                email,
+                password,
+            });
         },
 
         updatePassword(oldPass, newPass) {
@@ -171,7 +174,7 @@ export function createClient(domain: string, key: string): Client {
                 );
                 return conv.toCamelCase(data.attributes);
             }
-    
+
             const data = await http.get<FractalData<ClientServer>>(
                 routes.servers.main(),
                 this.auth
@@ -204,7 +207,9 @@ export function createClient(domain: string, key: string): Client {
         },
 
         sendServerCommand(id, command) {
-            return http.post(routes.servers.command(id), this.auth, { command });
+            return http.post(routes.servers.command(id), this.auth, {
+                command,
+            });
         },
 
         setServerPowerState(id, signal) {
@@ -315,7 +320,7 @@ export function createClient(domain: string, key: string): Client {
                 this.auth
             );
             return data.attributes.url;
-        }
+        },
     };
 
     return <Client>{
