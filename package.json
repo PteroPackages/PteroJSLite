@@ -24,7 +24,8 @@
     "node": ">=14.16"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "prettier --write src/**.ts"
   },
   "keywords": [
     "pterojs",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.6.4",
+    "prettier": "^2.7.1",
     "typedoc": "^0.23.17"
   }
 }
