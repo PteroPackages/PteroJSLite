@@ -9,8 +9,8 @@ function getHeaders(
     let h: Record<string, string> = {
         'User-Agent': `PteroJSLite ${version}`,
         'Content-Type': text ? 'text/plain' : 'application/json',
-        'Accept': 'application/json,text/plain'
-    }
+        Accept: 'application/json',
+    };
     if (key) h['Authorization'] = `Bearer ${key}`;
 
     return h;
@@ -24,23 +24,29 @@ async function _fetch<R>(
     text: boolean
 ): Promise<R | void> {
     body &&= JSON.stringify(body);
-    return await axios.request({
-        method,
-        url,
-        headers: getHeaders(key, text),
-        data: body
-    })
+    return axios
+        .request({
+            method,
+            url,
+            headers: getHeaders(key, text),
+            data: body,
+        })
         .then((res: AxiosResponse<R | void>) => {
             if (res.status === 204) return;
-            return <R> res.data;
+            return <R>res.data;
         })
         .catch((err: AxiosError<APIError>) => {
             if (!err.status && !err.response) throw err;
-            let fmt = '\n' + err.response!.data.errors
-                .map(e => `- ${e.code} (${e.status}): ${
-                    e.detail || 'No details provided'
-                }`)
-                .join('\n');
+            let fmt =
+                '\n' +
+                err
+                    .response!.data.errors.map(
+                        e =>
+                            `- ${e.code} (${e.status}): ${
+                                e.detail || 'No details provided'
+                            }`
+                    )
+                    .join('\n');
 
             throw new Error(fmt);
         });
@@ -94,5 +100,5 @@ export default {
     post: _post,
     patch: _patch,
     put: _put,
-    delete: _delete
-}
+    delete: _delete,
+};

@@ -5,7 +5,7 @@ import {
     UpdateBuildOptions,
     UpdateDetailsOptions,
     UpdateStartupOptions,
-    UpdateUserOptions
+    UpdateUserOptions,
 } from './options';
 import { application as routes } from '../routes';
 import { AppServer, Egg, Nest, Node, NodeConfig, User } from './types';
@@ -21,9 +21,18 @@ export interface IApplication {
     getServers(): Promise<AppServer[]>;
     getServers(id: number | string): Promise<AppServer>;
     createServer(options: CreateServerOptions): Promise<AppServer>;
-    updateServerDetails(id: number, options: UpdateDetailsOptions): Promise<AppServer>;
-    updateServerBuild(id: number, options: UpdateBuildOptions): Promise<AppServer>;
-    updateServerStartup(id: number, options: UpdateStartupOptions): Promise<AppServer>;
+    updateServerDetails(
+        id: number,
+        options: UpdateDetailsOptions
+    ): Promise<AppServer>;
+    updateServerBuild(
+        id: number,
+        options: UpdateBuildOptions
+    ): Promise<AppServer>;
+    updateServerStartup(
+        id: number,
+        options: UpdateStartupOptions
+    ): Promise<AppServer>;
     suspendServer(id: number): Promise<void>;
     unsuspendServer(id: number): Promise<void>;
     reinstallServer(id: number): Promise<void>;
@@ -36,7 +45,7 @@ export interface IApplication {
     getNests(id: number): Promise<Nest>;
     getEggs(nest: number): Promise<Egg[]>;
     getEggs(nest: number, id: number): Promise<Egg>;
-};
+}
 
 export type Application = IApplication & ThisType<{ auth: Auth }>;
 
@@ -46,15 +55,22 @@ export function createApp(domain: string, key: string): Application {
             let path = routes.users.main();
             if (arg) {
                 switch (typeof arg) {
-                    case 'number': path = routes.users.get(arg); break;
-                    case 'string': path = routes.users.ext(arg); break;
-                    default: throw new TypeError(`expected number or string; got ${typeof arg}`);
+                    case 'number':
+                        path = routes.users.get(arg);
+                        break;
+                    case 'string':
+                        path = routes.users.ext(arg);
+                        break;
+                    default:
+                        throw new TypeError(
+                            `expected number or string; got ${typeof arg}`
+                        );
                 }
-    
+
                 const data = await http.get<FractalItem<User>>(path, this.auth);
                 return conv.toCamelCase(data!.attributes);
             }
-    
+
             const data = await http.get<FractalData<User>>(path, this.auth);
             return data!.data.map(d => conv.toCamelCase(d.attributes));
         },
@@ -85,20 +101,33 @@ export function createApp(domain: string, key: string): Application {
             let path = routes.servers.main();
             if (arg) {
                 switch (typeof arg) {
-                    case 'number': path = routes.servers.get(arg); break;
-                    case 'string': path = routes.servers.ext(arg); break;
-                    default: throw new TypeError(
-                        `expected number or string; got ${typeof arg}`
-                    );
+                    case 'number':
+                        path = routes.servers.get(arg);
+                        break;
+                    case 'string':
+                        path = routes.servers.ext(arg);
+                        break;
+                    default:
+                        throw new TypeError(
+                            `expected number or string; got ${typeof arg}`
+                        );
                 }
-    
-                const data = await http.get<FractalItem<AppServer>>(path, this.auth);
-                return conv.toCamelCase(data!.attributes, { pass:['environment'] });
+
+                const data = await http.get<FractalItem<AppServer>>(
+                    path,
+                    this.auth
+                );
+                return conv.toCamelCase(data!.attributes, {
+                    pass: ['environment'],
+                });
             }
-    
-            const data = await http.get<FractalData<AppServer>>(path, this.auth);
-            return data!.data.map(
-                d => conv.toCamelCase(d.attributes, { pass:['environment'] })
+
+            const data = await http.get<FractalData<AppServer>>(
+                path,
+                this.auth
+            );
+            return data!.data.map(d =>
+                conv.toCamelCase(d.attributes, { pass: ['environment'] })
             );
         },
 
@@ -151,27 +180,34 @@ export function createApp(domain: string, key: string): Application {
         },
 
         deleteServer(id, force = false) {
-            if (force) return http.delete(routes.servers.get(id) + '/force', this.auth);
+            if (force)
+                return http.delete(
+                    routes.servers.get(id) + '/force',
+                    this.auth
+                );
             return http.delete(routes.servers.get(id), this.auth);
         },
 
         async getNodes(arg = undefined) {
             if (arg) {
                 const data = await http.get<FractalItem<Node>>(
-                    routes.nodes.get(arg as number), this.auth
+                    routes.nodes.get(arg as number),
+                    this.auth
                 );
                 return conv.toCamelCase(data!.attributes);
             }
-    
+
             const data = await http.get<FractalData<Node>>(
-                routes.nodes.main(), this.auth
+                routes.nodes.main(),
+                this.auth
             );
             return data!.data.map(d => conv.toCamelCase(d.attributes));
         },
 
         async getNodeConfig(id) {
             const data = await http.get<NodeConfig>(
-                routes.nodes.config(id), this.auth
+                routes.nodes.config(id),
+                this.auth
             );
             return conv.toCamelCase(data!);
         },
@@ -183,13 +219,15 @@ export function createApp(domain: string, key: string): Application {
         async getNests(arg = undefined) {
             if (arg) {
                 const data = await http.get<FractalItem<Nest>>(
-                    routes.nests.get(arg as number), this.auth
+                    routes.nests.get(arg as number),
+                    this.auth
                 );
                 return conv.toCamelCase(data!.attributes);
             }
-    
+
             const data = await http.get<FractalData<Nest>>(
-                routes.nests.main(), this.auth
+                routes.nests.main(),
+                this.auth
             );
             return data!.data.map(d => conv.toCamelCase(d.attributes));
         },
@@ -197,20 +235,22 @@ export function createApp(domain: string, key: string): Application {
         async getEggs(nest, arg = undefined) {
             if (arg) {
                 const data = await http.get<FractalItem<Egg>>(
-                    routes.nests.eggs.get(nest, arg as number), this.auth
+                    routes.nests.eggs.get(nest, arg as number),
+                    this.auth
                 );
                 return conv.toCamelCase(data!.attributes);
             }
-    
+
             const data = await http.get<FractalData<Egg>>(
-                routes.nests.eggs.main(nest), this.auth
+                routes.nests.eggs.main(nest),
+                this.auth
             );
             return data!.data.map(d => conv.toCamelCase(d.attributes));
-        }
+        },
     };
 
     return <Application>{
-        auth:{ domain, key },
-        ...impl
+        auth: { domain, key },
+        ...impl,
     };
 }

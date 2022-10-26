@@ -14,7 +14,7 @@ import {
     Resources,
     SSHKey,
     TwoFactorData,
-    WebSocketAuth
+    WebSocketAuth,
 } from './types';
 import conv from '../conversions';
 import http from '../http';
@@ -35,20 +35,20 @@ class ClientController {
 
     async getAccount(): Promise<Account> {
         const data = await http.get<FractalItem<Account>>(
-            routes.account.main(), this.auth
+            routes.account.main(),
+            this.auth
         );
         return conv.toCamelCase(data!.attributes);
     }
 
     async getTwoFactorURL(): Promise<TwoFactorData> {
         const data = await http.get<{ data: TwoFactorData }>(
-            routes.account.tfa(), this.auth
+            routes.account.tfa(),
+            this.auth
         );
-        return conv.toCamelCase(
-            data!.data, {
-                map:{ 'image_url_data': 'image_URL_data' }
-            }
-        );
+        return conv.toCamelCase(data!.data, {
+            map: { image_url_data: 'image_URL_data' },
+        });
     }
 
     async enableTwoFactor(code: number): Promise<string[]> {
@@ -65,35 +65,29 @@ class ClientController {
     }
 
     async updateEmail(email: string, password: string): Promise<void> {
-        return http.put(
-            routes.account.email(),
-            this.auth,
-            { email, password }
-        );
+        return http.put(routes.account.email(), this.auth, { email, password });
     }
 
     async updatePassword(oldPass: string, newPass: string): Promise<void> {
-        return http.put(
-            routes.account.password(),
-            this.auth,
-            {
-                current_password: oldPass,
-                password: newPass,
-                password_confirmation: newPass
-            }
-        );
+        return http.put(routes.account.password(), this.auth, {
+            current_password: oldPass,
+            password: newPass,
+            password_confirmation: newPass,
+        });
     }
 
     async getActivities(): Promise<Activity[]> {
         const data = await http.get<FractalData<Activity>>(
-            routes.account.activity(), this.auth
+            routes.account.activity(),
+            this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
 
     async getAPIKeys(): Promise<APIKey[]> {
         const data = await http.get<FractalData<APIKey>>(
-            routes.account.apikeys.main(), this.auth
+            routes.account.apikeys.main(),
+            this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
@@ -132,11 +126,9 @@ class ClientController {
     }
 
     async removeSSHKey(fingerprint: string): Promise<void> {
-        return http.post(
-            routes.account.sshkeys.remove(),
-            this.auth,
-            { fingerprint }
-        );
+        return http.post(routes.account.sshkeys.remove(), this.auth, {
+            fingerprint,
+        });
     }
 
     async getServers(): Promise<ClientServer[]>;
@@ -144,59 +136,57 @@ class ClientController {
     async getServers(arg: any = null): Promise<any> {
         if (arg) {
             const data = await http.get<FractalItem<ClientServer>>(
-                routes.servers.get(arg), this.auth
+                routes.servers.get(arg),
+                this.auth
             );
             return conv.toCamelCase(data!.attributes);
         }
 
         const data = await http.get<FractalData<ClientServer>>(
-            routes.servers.main(), this.auth
+            routes.servers.main(),
+            this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
 
     async getServerWebsocketAuth(id: string): Promise<WebSocketAuth> {
         const data = await http.get<{ data: WebSocketAuth }>(
-            routes.servers.ws(id), this.auth
+            routes.servers.ws(id),
+            this.auth
         );
         return conv.toCamelCase(data!.data);
     }
 
     async getServerResources(id: string): Promise<Resources> {
         const data = await http.get<FractalItem<Resources>>(
-            routes.servers.resources(id), this.auth
+            routes.servers.resources(id),
+            this.auth
         );
         return conv.toCamelCase(data!.attributes);
     }
 
     async getServerActivities(id: string): Promise<Activity[]> {
         const data = await http.get<FractalData<Activity>>(
-            routes.servers.activity(id), this.auth
+            routes.servers.activity(id),
+            this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
 
     async sendServerCommand(id: string, command: string): Promise<void> {
-        return http.post(
-            routes.servers.command(id),
-            this.auth,
-            { command }
-        );
+        return http.post(routes.servers.command(id), this.auth, { command });
     }
 
     async setServerPowerState(id: string, signal: PowerSignal): Promise<void> {
-        return http.post(
-            routes.servers.power(id),
-            this.auth,
-            { signal }
-        );
+        return http.post(routes.servers.power(id), this.auth, { signal });
     }
 
     // section: databases
 
     async getServerFiles(id: string): Promise<File[]> {
         const data = await http.get<FractalData<File>>(
-            routes.servers.files.main(id), this.auth
+            routes.servers.files.main(id),
+            this.auth
         );
         return data!.data.map(d => conv.toCamelCase(d.attributes));
     }
@@ -221,20 +211,21 @@ class ClientController {
 
     // TODO: downloadFile
 
-    async renameFiles(id: string, root: string, data: RenameData): Promise<void> {
-        return http.post(
-            routes.servers.files.rename(id),
-            this.auth,
-            { root, files: data }
-        );
+    async renameFiles(
+        id: string,
+        root: string,
+        data: RenameData
+    ): Promise<void> {
+        return http.post(routes.servers.files.rename(id), this.auth, {
+            root,
+            files: data,
+        });
     }
 
     async copyFile(id: string, name: string): Promise<void> {
-        return http.post(
-            routes.servers.files.copy(id),
-            this.auth,
-            { location: name }
-        );
+        return http.post(routes.servers.files.copy(id), this.auth, {
+            location: name,
+        });
     }
 
     async writeFile(id: string, name: string, content: string): Promise<void> {
@@ -250,7 +241,11 @@ class ClientController {
         return this.writeFile(id, name, '');
     }
 
-    async compressFiles(id: string, root: string, files: string[]): Promise<File> {
+    async compressFiles(
+        id: string,
+        root: string,
+        files: string[]
+    ): Promise<File> {
         const data = await http.post<FractalItem<File>>(
             routes.servers.files.compress(id),
             this.auth,
@@ -259,36 +254,40 @@ class ClientController {
         return conv.toCamelCase(data!.attributes);
     }
 
-    async decompressFile(id: string, root: string, name: string): Promise<void> {
-        return http.post(
-            routes.servers.files.decompress(id),
-            this.auth,
-            { root, file: name }
-        );
+    async decompressFile(
+        id: string,
+        root: string,
+        name: string
+    ): Promise<void> {
+        return http.post(routes.servers.files.decompress(id), this.auth, {
+            root,
+            file: name,
+        });
     }
 
-    async deleteFiles(id: string, root: string, files: string[]): Promise<void> {
-        return http.post(
-            routes.servers.files.delete(id),
-            this.auth,
-            { root, files }
-        );
+    async deleteFiles(
+        id: string,
+        root: string,
+        files: string[]
+    ): Promise<void> {
+        return http.post(routes.servers.files.delete(id), this.auth, {
+            root,
+            files,
+        });
     }
 
     async createFolder(id: string, root: string, name: string): Promise<void> {
-        return http.post(
-            routes.servers.files.create(id),
-            this.auth,
-            { root, name }
-        );
+        return http.post(routes.servers.files.create(id), this.auth, {
+            root,
+            name,
+        });
     }
 
     async chmodFiles(id: string, root: string, data: ChmodData): Promise<void> {
-        return http.post(
-            routes.servers.files.chmod(id),
-            this.auth,
-            { root, files: data }
-        );
+        return http.post(routes.servers.files.chmod(id), this.auth, {
+            root,
+            files: data,
+        });
     }
 
     async pullFile(id: string, options: PullFileOptions): Promise<void> {

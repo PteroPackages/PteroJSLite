@@ -1,7 +1,7 @@
 export interface ConvertOptions {
-    ignore?:    string[];
-    map?:       Record<string, string>;
-    pass?:      string[];
+    ignore?: string[];
+    map?: Record<string, string>;
+    pass?: string[];
 }
 
 function camelCase(str: string): string {
@@ -24,7 +24,7 @@ function camelCase(str: string): string {
 
 function toCamelCase<T>(obj: object, options: ConvertOptions = {}): T {
     if (typeof obj !== 'object') return obj;
-    if (Array.isArray(obj)) return <any> obj.map(i => toCamelCase(i));
+    if (Array.isArray(obj)) return <any>obj.map(i => toCamelCase(i));
     const parsed = {} as any;
 
     for (let [k, v] of Object.entries(obj)) {
@@ -42,7 +42,7 @@ function toCamelCase<T>(obj: object, options: ConvertOptions = {}): T {
         parsed[camelCase(k)] = v;
     }
 
-    return <T> parsed;
+    return <T>parsed;
 }
 
 function snakeCase(str: string): string {
@@ -60,7 +60,7 @@ function snakeCase(str: string): string {
 
 function toSnakeCase<T>(obj: object, options: ConvertOptions = {}): T {
     if (typeof obj !== 'object') return obj;
-    if (Array.isArray(obj)) return <any> obj.map(i => toCamelCase(i));
+    if (Array.isArray(obj)) return <any>obj.map(i => toCamelCase(i));
     const parsed = {} as any;
 
     for (let [k, v] of Object.entries(obj)) {
@@ -78,10 +78,10 @@ function toSnakeCase<T>(obj: object, options: ConvertOptions = {}): T {
         parsed[snakeCase(k)] = v;
     }
 
-    return <T> parsed;
+    return <T>parsed;
 }
 
 export default {
     toCamelCase,
-    toSnakeCase
-}
+    toSnakeCase,
+};

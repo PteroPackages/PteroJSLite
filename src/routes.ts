@@ -1,19 +1,20 @@
 export const application = {
-    users:{
+    users: {
         main: () => '/api/application/users',
         get: (u: number) => `/api/application/users/${u}`,
-        ext: (u: string) => `/api/application/users/external/${u}`
+        ext: (u: string) => `/api/application/users/external/${u}`,
     },
-    nodes:{
+    nodes: {
         main: () => '/api/application/nodes',
         get: (n: number) => `/api/application/nodes/${n}`,
-        config: (n: number) => `/api/application/nodes/${n}/configuration`
+        config: (n: number) => `/api/application/nodes/${n}/configuration`,
     },
-    allocations:{
+    allocations: {
         main: (n: number) => `/api/application/nodes/${n}/allocations`,
-        get: (n: number, id: number) => `/api/application/nodes/${n}/allocations/${id}`
+        get: (n: number, id: number) =>
+            `/api/application/nodes/${n}/allocations/${id}`,
     },
-    servers:{
+    servers: {
         main: () => '/api/application/servers',
         get: (s: number) => `/api/application/servers/${s}`,
         ext: (s: string) => `/api/application/servers/external/${s}`,
@@ -22,102 +23,119 @@ export const application = {
         startup: (s: number) => `/api/application/servers/${s}/startup`,
         suspend: (s: number) => `/api/application/servers/${s}/suspend`,
         unsuspend: (s: number) => `/api/application/servers/${s}/unsuspend`,
-        reinstall: (s: number) => `/api/application/servers/${s}/reinstall`
+        reinstall: (s: number) => `/api/application/servers/${s}/reinstall`,
     },
-    locations:{
+    locations: {
         main: () => '/api/application/locations',
-        get: (l: number) => `/api/application/locations/${l}`
+        get: (l: number) => `/api/application/locations/${l}`,
     },
-    nests:{
+    nests: {
         main: () => '/api/application/nests',
         get: (n: number) => `/api/application/nests/${n}`,
-        eggs:{
+        eggs: {
             main: (n: number) => `/api/application/nests/${n}/eggs`,
-            get: (n: number, e: number) => `/api/application/nests/${n}/eggs/${e}`
-        }
-    }
-}
+            get: (n: number, e: number) =>
+                `/api/application/nests/${n}/eggs/${e}`,
+        },
+    },
+};
 
 export const client = {
-    account:{
+    account: {
         main: () => '/api/client/account',
         tfa: () => '/api/client/account/two-factor',
         email: () => '/api/client/account/email',
         password: () => '/api/client/account/password',
         activity: () => '/api/client/account/activity',
-        apikeys:{
+        apikeys: {
             main: () => '/api/client/account/api-keys',
-            get: (id: string) => `/api/client/account/api-keys/${id}`
+            get: (id: string) => `/api/client/account/api-keys/${id}`,
         },
-        sshkeys:{
+        sshkeys: {
             main: () => '/api/client/account/ssh-keys',
-            remove: () => '/api/client/account/ssh-keys/remove'
-        }
+            remove: () => '/api/client/account/ssh-keys/remove',
+        },
     },
-    servers:{
+    servers: {
         main: () => '/api/client',
         get: (s: string) => `/api/client/servers/${s}`,
-        databases:{
+        databases: {
             main: (s: string) => `/api/client/servers/${s}/databases`,
-            get: (s: string, id: number) => `/api/client/servers/${s}/databases/${id}`,
-            rotate: (s: string, id: number) => `/api/client/servers/${s}/databases/${id}/rotate-password`
+            get: (s: string, id: number) =>
+                `/api/client/servers/${s}/databases/${id}`,
+            rotate: (s: string, id: number) =>
+                `/api/client/servers/${s}/databases/${id}/rotate-password`,
         },
-        files:{
+        files: {
             main: (s: string) => `/api/client/servers/${s}/files/list`,
-            contents: (s: string, f: string) => `/api/client/servers/${s}/files/contents?file=${f}`,
-            download: (s: string, f: string) => `/api/client/servers/${s}/files/download?file=${f}`,
+            contents: (s: string, f: string) =>
+                `/api/client/servers/${s}/files/contents?file=${f}`,
+            download: (s: string, f: string) =>
+                `/api/client/servers/${s}/files/download?file=${f}`,
             rename: (s: string) => `/api/client/servers/${s}/files/rename`,
             copy: (s: string) => `/api/client/servers/${s}/files/copy`,
-            write: (s: string, f: string) => `/api/client/servers/${s}/files/write?file=${f}`,
+            write: (s: string, f: string) =>
+                `/api/client/servers/${s}/files/write?file=${f}`,
             compress: (s: string) => `/api/client/servers/${s}/files/compress`,
-            decompress: (s: string) => `/api/client/servers/${s}/files/decompress`,
+            decompress: (s: string) =>
+                `/api/client/servers/${s}/files/decompress`,
             delete: (s: string) => `/api/client/servers/${s}/files/delete`,
-            create: (s: string) => `/api/client/servers/${s}/files/create-folder`,
+            create: (s: string) =>
+                `/api/client/servers/${s}/files/create-folder`,
             chmod: (s: string) => `/api/client/servers/${s}/files/chmod`,
             pull: (s: string) => `/api/client/servers/${s}/files/pull`,
-            upload: (s: string) => `/api/client/servers/${s}/files/upload`
+            upload: (s: string) => `/api/client/servers/${s}/files/upload`,
         },
-        schedules:{
+        schedules: {
             main: (s: string) => `/api/client/servers/${s}/schedules`,
-            get: (s: string, id: number) => `/api/client/servers/${s}/schedules/${id}`,
-            tasks:{
-                main: (s: string, id: number) => `/api/client/servers/${s}/schedules/${id}/tasks`,
-                get: (s: string, id: number, t: number) => `/api/client/servers/${s}/schedules/${id}/tasks/${t}`
-            }
+            get: (s: string, id: number) =>
+                `/api/client/servers/${s}/schedules/${id}`,
+            tasks: {
+                main: (s: string, id: number) =>
+                    `/api/client/servers/${s}/schedules/${id}/tasks`,
+                get: (s: string, id: number, t: number) =>
+                    `/api/client/servers/${s}/schedules/${id}/tasks/${t}`,
+            },
         },
-        network:{
+        network: {
             main: (s: string) => `/api/client/servers/${s}/network/allocations`,
-            get: (s: string, id: number) => `/api/client/servers/${s}/network/allocations/${id}`,
-            primary: (s: string, id: number) => `/api/client/servers/${s}/network/allocations/${id}/primary`
+            get: (s: string, id: number) =>
+                `/api/client/servers/${s}/network/allocations/${id}`,
+            primary: (s: string, id: number) =>
+                `/api/client/servers/${s}/network/allocations/${id}/primary`,
         },
-        users:{
+        users: {
             main: (s: string) => `/api/client/servers/${s}/users`,
-            get: (s: string, id: number) => `/api/client/servers/${s}/users/${id}`
+            get: (s: string, id: number) =>
+                `/api/client/servers/${s}/users/${id}`,
         },
-        backups:{
+        backups: {
             main: (s: string) => `/api/client/servers/${s}/backups`,
-            get: (s: string, id: number) => `/api/client/servers/${s}/backups/${id}`,
-            download: (s: string, id: number) => `/api/client/servers/${s}/backups/${id}/download`
+            get: (s: string, id: number) =>
+                `/api/client/servers/${s}/backups/${id}`,
+            download: (s: string, id: number) =>
+                `/api/client/servers/${s}/backups/${id}/download`,
         },
-        startup:{
+        startup: {
             get: (s: string) => `/api/client/servers/${s}/startup`,
-            var: (s: string) => `/api/client/servers/${s}/startup/variable`
+            var: (s: string) => `/api/client/servers/${s}/startup/variable`,
         },
-        settings:{
+        settings: {
             rename: (s: string) => `/api/client/servers/${s}/settings/rename`,
-            reinstall: (s: string) => `/api/client/servers/${s}/settings/reinstall`
+            reinstall: (s: string) =>
+                `/api/client/servers/${s}/settings/reinstall`,
         },
         ws: (s: string) => `/api/client/servers/${s}/websocket`,
         resources: (s: string) => `/api/client/servers/${s}/resources`,
         activity: (s: string) => `/api/client/servers/${s}/activity`,
         command: (s: string) => `/api/client/servers/${s}/command`,
-        power: (s: string) => `/api/client/servers/${s}/power`
+        power: (s: string) => `/api/client/servers/${s}/power`,
     },
     main: () => '/api/client',
-    permissions: () => '/api/client/permissions'
-}
+    permissions: () => '/api/client/permissions',
+};
 
 export default {
     application,
-    client
-}
+    client,
+};
