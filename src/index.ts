@@ -8,7 +8,7 @@ export * from './app/options';
 export * from './app/types';
 
 // Client API
-export { createClient } from './client';
+export * from './client';
 export * from './client/types';
 
 // HTTPS
