@@ -54,7 +54,7 @@ export interface IClient {
     createFolder(id: string, root: string, name: string): Promise<void>;
     chmodFiles(id: string, root: string, data: ChmodData): Promise<void>;
     pullFile(id: string, options: PullFileOptions): Promise<void>;
-    getUploadURL(id: string): Promise<string>;
+    getFileUploadURL(id: string): Promise<string>;
 }
 
 export type Client = IClient & ThisType<{ auth: Auth }>;
@@ -314,7 +314,7 @@ export function createClient(domain: string, key: string): Client {
             );
         },
 
-        async getUploadURL(id) {
+        async getFileUploadURL(id) {
             const data = await http.get<FractalItem<{ url: string }>>(
                 routes.servers.files.upload(id),
                 this.auth
