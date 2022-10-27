@@ -1,6 +1,6 @@
 {
   "name": "@devnote-dev/pterojslite",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A lightweight version of the PteroJS package",
   "author": "Devonte W <https://github.com/devnote-dev>",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "url": "git+https://github.com/PteroPackages/PteroJSLite.git"
   },
   "main": "./dist/src/index.js",
-  "types": "./dist/src/types",
+  "types": "./dist/src/types/index.d.ts",
   "files": [
     "dist",
     "CHANGELOG.md",
@@ -24,21 +24,26 @@
     "node": ">=14.16"
   },
   "scripts": {
+    "prepublish": "tsc",
     "build": "tsc",
     "lint": "prettier --write src/**/**.ts"
   },
   "keywords": [
+    "api",
+    "nodejs",
     "pterojs",
+    "wrapper",
+    "javascript",
+    "typescript",
+    "pterojslite",
     "pterodactyl",
-    "pterodactyl-api",
-    "wrapper"
+    "pterodactyl-api"
   ],
   "dependencies": {
     "axios": "^0.27.2"
   },
   "devDependencies": {
     "@types/node": "^18.6.4",
-    "prettier": "^2.7.1",
-    "typedoc": "^0.23.17"
+    "prettier": "^2.7.1"
   }
 }

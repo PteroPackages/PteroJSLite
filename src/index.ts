@@ -1,6 +1,4 @@
-import { version as v } from '../package.json';
-
-export const version = v;
+export { version } from '../package.json';
 
 // Application API
 export * from './app';
