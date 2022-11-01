@@ -14,7 +14,7 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports":{
+  "exports": {
     "require": "./dist/index.js",
     "import": "./dist/index.mjs",
     "default": "./dist/index.mjs"
@@ -31,6 +31,7 @@
   "scripts": {
     "prepublish": "tsup",
     "build": "tsup",
+    "docs": "typedoc --out docs src/index.ts",
     "format": "prettier --write src/**/**.ts"
   },
   "tsup": {
@@ -64,6 +65,7 @@
     "@types/node": "^18.6.4",
     "prettier": "^2.7.1",
     "tsup": "^6.3.0",
+    "typedoc": "^0.23.19",
     "typescript": "^4.8.4"
   }
 }
