@@ -20,7 +20,12 @@ export interface IApplication {
     deleteUser(id: number): Promise<void>;
     getServers(): Promise<AppServer[]>;
     getServers(id: number | string): Promise<AppServer>;
-    createServer(options: CreateServerOptions): Promise<AppServer>;
+    createServer(
+        options:
+            | CreateServerOptions
+            | Omit<CreateServerOptions, 'allocation'>
+            | Omit<CreateServerOptions, 'deploy'>
+    ): Promise<AppServer>;
     updateServerDetails(
         id: number,
         options: UpdateDetailsOptions

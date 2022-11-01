@@ -15,12 +15,12 @@ export interface CreateServerOptions {
     featureLimits?: Partial<FeatureLimits>;
     allocation: {
         default: number;
-        additional?: string[];
+        additional?: number[];
     };
-    deploy?: {
+    deploy: {
         locations: number[];
         portRange: string[];
-        dedicatedIp: string;
+        dedicatedIp: boolean;
     };
     startOnCompletion?: boolean;
 }
