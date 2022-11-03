@@ -162,7 +162,29 @@ export type Application = IApplication & ThisType<{ auth: Auth }>;
  * @param key The API key to use.
  * @returns The interface object for the application API.
  */
-export function createApp(url: string, key: string): Application {
+export function createApp(url: string, key: string): Application;
+export function createApp(auth: Auth): Application;
+export function createApp(arg1: unknown, arg2?: string) {
+    let auth: Auth;
+
+    switch (typeof arg1) {
+        case 'string':{
+            if (!arg2) throw new Error('URL and key is required');
+            auth = { url: arg1, key: arg2 };
+            break;
+        }
+        case 'object':{
+            if (arg1 === null) throw new Error('Expected Auth object; got null');
+            if (arg1.hasOwnProperty('url') && arg1.hasOwnProperty('key')) {
+                auth = arg1 as Auth;
+                break;
+            }
+        }
+        default:{
+            throw new Error(`Expected URL and key or Auth object; got ${typeof arg1}`);
+        }
+    }
+
     const impl = <IApplication>{
         async getUsers(arg = undefined) {
             let path = routes.users.main();
@@ -362,8 +384,5 @@ export function createApp(url: string, key: string): Application {
         },
     };
 
-    return <Application>{
-        auth: { url, key },
-        ...impl,
-    };
+    return <Application>{ auth, ...impl };
 }

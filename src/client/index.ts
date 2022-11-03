@@ -226,11 +226,33 @@ export type Client = IClient & ThisType<{ auth: Auth }>;
 /**
  * Creates an interface object for the Client API.
  * @see {@link IClient} for more information and implementation.
- * @param url The domain name for the panel.
+ * @param url The URL for the panel.
  * @param key The API key to use. This **cannot** be an application API key.
  * @returns The interface object for the Client API.
  */
-export function createClient(url: string, key: string): Client {
+export function createClient(url: string, key: string): Client;
+export function createClient(auth: Auth): Client;
+export function createClient(arg1: unknown, arg2?: string) {
+    let auth: Auth;
+
+    switch (typeof arg1) {
+        case 'string':{
+            if (!arg2) throw new Error('URL and key is required');
+            auth = { url: arg1, key: arg2 };
+            break;
+        }
+        case 'object':{
+            if (arg1 === null) throw new Error('Expected Auth object; got null');
+            if (arg1.hasOwnProperty('url') && arg1.hasOwnProperty('key')) {
+                auth = arg1 as Auth;
+                break;
+            }
+        }
+        default:{
+            throw new Error(`Expected URL and key or Auth object; got ${typeof arg1}`);
+        }
+    }
+
     const impl = <IClient>{
         async getPermissions() {
             const data = await http.get<
@@ -494,8 +516,5 @@ export function createClient(url: string, key: string): Client {
         },
     };
 
-    return <Client>{
-        auth: { url, key },
-        ...impl,
-    };
+    return <Client>{ auth, ...impl };
 }
