@@ -20,45 +20,216 @@ import conv from '../conversions';
 import http from '../http';
 
 export interface IClient {
+    /** @returns A descriptor object containing all the available permissions. */
     getPermissions(): Promise<PermissionDescriptor>;
+    /** @returns The account object. */
     getAccount(): Promise<Account>;
-    getTwoFactorURL(): Promise<TwoFactorData>;
+    /** @returns The two-factor authentication credentials. */
+    getTwoFactorData(): Promise<TwoFactorData>;
+    /**
+     * Enabled two-factor authentication for the account.
+     * @param code The two-factor authentication code.
+     */
     enableTwoFactor(code: number): Promise<string[]>;
+    /**
+     * Disables two-factor authentication for the account.
+     * @param password The account password.
+     */
     disableTwoFactor(password: string): Promise<void>;
+    /**
+     * Updates the email for the account.
+     * @param email The new email.
+     * @param password The account password.
+     */
     updateEmail(email: string, password: string): Promise<void>;
+    /**
+     * Updates the password for the account. Note that this will invalidate all existing browser
+     * sessions with the account.
+     * @param oldPass The old password.
+     * @param newPass The new password.
+     */
     updatePassword(oldPass: string, newPass: string): Promise<void>;
+    /** @returns An array of account activity objects. */
     getActivities(): Promise<Activity[]>;
+    /** @returns An array of API key objects. */
     getAPIKeys(): Promise<APIKey[]>;
+    /**
+     * Creates an API key associated with the account.
+     * @param description A brief description of the API key.
+     * @param allowedIps An array of whitelisted IPs for the API key. Use an empty array to allow
+     * all origins.
+     * @returns The new API key.
+     */
     createAPIKey(description: string, allowedIps: string[]): Promise<APIKey>;
+    /**
+     * Deletes an API key associated with the account.
+     * @param id The identifier of the API key.
+     */
     deleteAPIKey(id: string): Promise<void>;
+    /** @returns An array of SSH key objects. */
     getSSHKeys(): Promise<SSHKey[]>;
+    /**
+     * Creates an SSH key associated with the account.
+     * @param name The name of the SSH key.
+     * @param publicKey The public key of the SSH key.
+     * @returns The new SSH key.
+     */
     createSSHKey(name: string, publicKey: string): Promise<SSHKey>;
+    /**
+     * Removes an SSH key associated with the account.
+     * @param fingerprint The fingerprint for the SSH key.
+     */
     removeSSHKey(fingerprint: string): Promise<void>;
+    /** @returns An array of server objects. */
     getServers(): Promise<ClientServer[]>;
+    /**
+     * @param id The identifier of the server.
+     * @returns A server object based on the identifier specified.
+     */
     getServers(id: string): Promise<ClientServer>;
+    /**
+     * Gets the websocket authentication credentials for a specified server. Note that this does
+     * not perform any interactions with the server websocket.
+     * @param id The identifier of the server.
+     * @returns The websocket authentication credentials for the server.
+     */
     getServerWebsocketAuth(id: string): Promise<WebSocketAuth>;
+    /**
+     * @param id The identifier of the server.
+     * @returns An object containing all the resource information of a server.
+     */
     getServerResources(id: string): Promise<Resources>;
+    /**
+     * @param id The identifier of the server.
+     * @returns An array of server activity objects.
+     */
     getServerActivities(id: string): Promise<Activity[]>;
+    /**
+     * Sends a command to the console of a server.
+     * @param id The identifier of the server.
+     * @param command The command to send.
+     */
     sendServerCommand(id: string, command: string): Promise<void>;
+    /**
+     * Sets the power state of a server, this can be:
+     * * start
+     * * stop
+     * * restart
+     * * kill
+     * 
+     * @param id The identifier of the server.
+     * @param signal The power signal to send.
+     */
     setServerPowerState(id: string, signal: PowerSignal): Promise<void>;
+    /**
+     * @param id The identifier of the server.
+     * @returns An array of file objects.
+     */
     getServerFiles(id: string): Promise<File[]>;
+    /**
+     * Gets the contents of a file on a server.
+     * @param id The identifier of the server.
+     * @param name The name of the file.
+     * @returns The file contents.
+     */
     getFileContents(id: string, name: string): Promise<String>;
+    /**
+     * @param id The identifier of the server.
+     * @param name The name of the file to download.
+     * @returns The download URL of a specified file on a server.
+     */
     getFileDownloadURL(id: string, name: string): Promise<string>;
+    /**
+     * Renames one or more files in the file system of a server.
+     * @param id The identifier of the server.
+     * @param root The root directory of the files.
+     * @param data The file rename data.
+     */
     renameFiles(id: string, root: string, data: RenameData): Promise<void>;
+    /**
+     * Copies a specified file on the file system of a server. The copied file will have "copy"
+     * appended to the name.
+     * @param id The identifier of the server.
+     * @param name The name of the file.
+     */
     copyFile(id: string, name: string): Promise<void>;
+    /**
+     * Writes the specified contents to a file on the file system of a server. If the file does not
+     * exist, it will be created instead.
+     * @param id The identifier of the server.
+     * @param name The name of the file.
+     * @param content The content to write.
+     */
     writeFile(id: string, name: string, content: string): Promise<void>;
+    /**
+     * Creates a file on the file system of a server. If the file already exists, the request is
+     * ignored.
+     * @param id The identifier of the server.
+     * @param name The name of the file.
+     */
     createFile(id: string, name: string): Promise<void>;
+    /**
+     * Compresses one or more files into a single archive.
+     * @param id The identifier of the server.
+     * @param root The root directory of the files.
+     * @param files The names of the files.
+     * @returns The compressed (or archived) file.
+     */
     compressFiles(id: string, root: string, files: string[]): Promise<File>;
+    /**
+     * Decompresses a compressed (or archived) file.
+     * @param id The identifier of the server.
+     * @param root The root directory of the file.
+     * @param name The name of the file.
+     */
     decompressFile(id: string, root: string, name: string): Promise<void>;
+    /**
+     * Deletes one or more files from the file system of a server.
+     * @param id The identifier of the server.
+     * @param root The root directory of the files.
+     * @param files The names of the files to delete.
+     */
     deleteFiles(id: string, root: string, files: string[]): Promise<void>;
+    /**
+     * Creates a folder in the file system of a server.
+     * @param id The identifier of the server.
+     * @param root The root directory to use.
+     * @param name The name of the folder.
+     */
     createFolder(id: string, root: string, name: string): Promise<void>;
+    /**
+     * Changes the file permission of one or more files in a server.
+     * @param id The identifier of the server.
+     * @param root The root directory of the files.
+     * @param data The file names and modes to change.
+     */
     chmodFiles(id: string, root: string, data: ChmodData): Promise<void>;
+    /**
+     * Pulls a file from an external site or domain into the file system of a server.
+     * @param id The identifier of the server.
+     * @param options Options to set when pulling the file.
+     */
     pullFile(id: string, options: PullFileOptions): Promise<void>;
+    /**
+     * @param id The identifier of the server.
+     * @returns The upload URL for the file manager of a server.
+     */
     getFileUploadURL(id: string): Promise<string>;
 }
 
+/**
+ * Represents the interface object for the Client API.
+ * @see {@link IClient} for more information and implementation.
+ */
 export type Client = IClient & ThisType<{ auth: Auth }>;
 
+/**
+ * Creates an interface object for the Client API.
+ * @see {@link IClient} for more information and implementation.
+ * @param domain The domain name for the panel.
+ * @param key The API key to use. This **cannot** be an application API key.
+ * @returns The interface object for the Client API.
+ */
 export function createClient(domain: string, key: string): Client {
     const impl = <IClient>{
         async getPermissions() {
@@ -76,7 +247,7 @@ export function createClient(domain: string, key: string): Client {
             return conv.toCamelCase(data.attributes);
         },
 
-        async getTwoFactorURL() {
+        async getTwoFactorData() {
             const data = await http.get<{ data: TwoFactorData }>(
                 routes.account.tfa(),
                 this.auth
