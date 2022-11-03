@@ -8,7 +8,15 @@ import {
     UpdateUserOptions,
 } from './options';
 import { application as routes } from '../routes';
-import { Allocation, AppServer, Egg, Nest, Node, NodeConfig, User } from './types';
+import {
+    Allocation,
+    AppServer,
+    Egg,
+    Nest,
+    Node,
+    NodeConfig,
+    User,
+} from './types';
 import conv from '../conversions';
 import http from '../http';
 
@@ -137,7 +145,7 @@ export interface IApplication {
      * // creates 1000 allocations from port 5000 to port 6000.
      * app.createAllocations(2, '10.0.0.4', ['5000-6000']);
      * ```
-     * 
+     *
      * Allocations below port 1025 cannot be created, and you cannot create more than 1000
      * allocations per port range.
      * @param id The ID of the node.
@@ -145,7 +153,12 @@ export interface IApplication {
      * @param ports The ports or port ranges to create allocations for.
      * @param [alias] The IP alias for the alloactions.
      */
-    createNodeAllocations(id: number, ip: string, ports: string[], alias?: string): Promise<void>;
+    createNodeAllocations(
+        id: number,
+        ip: string,
+        ports: string[],
+        alias?: string
+    ): Promise<void>;
     /**
      * Deletes a node by its ID. Note that this will not work if there are servers on the node.
      * @param id The ID of the node.
@@ -196,20 +209,23 @@ export function createApp(arg1: unknown, arg2?: string) {
     let auth: Auth;
 
     switch (typeof arg1) {
-        case 'string':{
+        case 'string': {
             if (!arg2) throw new Error('URL and key is required');
             auth = { url: arg1, key: arg2 };
             break;
         }
-        case 'object':{
-            if (arg1 === null) throw new Error('Expected Auth object; got null');
+        case 'object': {
+            if (arg1 === null)
+                throw new Error('Expected Auth object; got null');
             if (arg1.hasOwnProperty('url') && arg1.hasOwnProperty('key')) {
                 auth = arg1 as Auth;
                 break;
             }
         }
-        default:{
-            throw new Error(`Expected URL and key or Auth object; got ${typeof arg1}`);
+        default: {
+            throw new Error(
+                `Expected URL and key or Auth object; got ${typeof arg1}`
+            );
         }
     }
 
@@ -384,11 +400,11 @@ export function createApp(arg1: unknown, arg2?: string) {
         },
 
         createNodeAllocations(id, ip, ports, alias?) {
-            return http.post(
-                routes.allocations.main(id),
-                this.auth,
-                { ip, ports, alias }
-            );
+            return http.post(routes.allocations.main(id), this.auth, {
+                ip,
+                ports,
+                alias,
+            });
         },
 
         deleteNode(id) {

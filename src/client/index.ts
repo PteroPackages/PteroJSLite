@@ -116,7 +116,7 @@ export interface IClient {
      * * stop
      * * restart
      * * kill
-     * 
+     *
      * @param id The identifier of the server.
      * @param signal The power signal to send.
      */
@@ -236,20 +236,23 @@ export function createClient(arg1: unknown, arg2?: string) {
     let auth: Auth;
 
     switch (typeof arg1) {
-        case 'string':{
+        case 'string': {
             if (!arg2) throw new Error('URL and key is required');
             auth = { url: arg1, key: arg2 };
             break;
         }
-        case 'object':{
-            if (arg1 === null) throw new Error('Expected Auth object; got null');
+        case 'object': {
+            if (arg1 === null)
+                throw new Error('Expected Auth object; got null');
             if (arg1.hasOwnProperty('url') && arg1.hasOwnProperty('key')) {
                 auth = arg1 as Auth;
                 break;
             }
         }
-        default:{
-            throw new Error(`Expected URL and key or Auth object; got ${typeof arg1}`);
+        default: {
+            throw new Error(
+                `Expected URL and key or Auth object; got ${typeof arg1}`
+            );
         }
     }
 
