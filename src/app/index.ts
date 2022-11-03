@@ -150,18 +150,19 @@ export interface IApplication {
 }
 
 /**
- * Represents the interface object for the Application API. See {@link IApplication} for more
- * information and implementation.
+ * Represents the interface object for the Application API.
+ * @see {@link IApplication} for more information and implementation.
  */
 export type Application = IApplication & ThisType<{ auth: Auth }>;
 
 /**
  * Creates an interface object for interacting with the Application API.
- * @param domain The domain name for the panel.
+ * @see {@link IApplication} for more information and implementation.
+ * @param url The URL for the panel.
  * @param key The API key to use.
  * @returns The interface object for the application API.
  */
-export function createApp(domain: string, key: string): Application {
+export function createApp(url: string, key: string): Application {
     const impl = <IApplication>{
         async getUsers(arg = undefined) {
             let path = routes.users.main();
@@ -362,7 +363,7 @@ export function createApp(domain: string, key: string): Application {
     };
 
     return <Application>{
-        auth: { domain, key },
+        auth: { url, key },
         ...impl,
     };
 }

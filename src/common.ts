@@ -17,7 +17,7 @@ export interface FractalItem<T> {
 }
 
 export interface Auth {
-    domain: string;
+    url: string;
     key: string;
 }
 

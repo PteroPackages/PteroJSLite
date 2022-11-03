@@ -226,11 +226,11 @@ export type Client = IClient & ThisType<{ auth: Auth }>;
 /**
  * Creates an interface object for the Client API.
  * @see {@link IClient} for more information and implementation.
- * @param domain The domain name for the panel.
+ * @param url The domain name for the panel.
  * @param key The API key to use. This **cannot** be an application API key.
  * @returns The interface object for the Client API.
  */
-export function createClient(domain: string, key: string): Client {
+export function createClient(url: string, key: string): Client {
     const impl = <IClient>{
         async getPermissions() {
             const data = await http.get<
@@ -495,7 +495,7 @@ export function createClient(domain: string, key: string): Client {
     };
 
     return <Client>{
-        auth: { domain, key },
+        auth: { url, key },
         ...impl,
     };
 }

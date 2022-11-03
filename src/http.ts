@@ -55,7 +55,7 @@ function _get<R>(
     body: any = undefined,
     text: boolean = false
 ): Promise<R> {
-    return _fetch('GET', auth.domain + path, auth.key, body, text);
+    return _fetch('GET', auth.url + path, auth.key, body, text);
 }
 
 function _post<R>(
@@ -64,7 +64,7 @@ function _post<R>(
     body: any = undefined,
     text: boolean = false
 ): Promise<R> {
-    return _fetch('POST', auth.domain + path, auth.key, body, text);
+    return _fetch('POST', auth.url + path, auth.key, body, text);
 }
 
 function _patch<R>(
@@ -72,11 +72,11 @@ function _patch<R>(
     auth: Auth,
     body: any = undefined
 ): Promise<R> {
-    return _fetch('PATCH', auth.domain + path, auth.key, body, false);
+    return _fetch('PATCH', auth.url + path, auth.key, body, false);
 }
 
 function _put<R>(path: string, auth: Auth, body: any = undefined): Promise<R> {
-    return _fetch('PUT', auth.domain + path, auth.key, body, false);
+    return _fetch('PUT', auth.url + path, auth.key, body, false);
 }
 
 function _delete(
@@ -84,7 +84,7 @@ function _delete(
     auth: Auth,
     body: any = undefined
 ): Promise<void> {
-    return _fetch('DELETE', auth.domain + path, auth.key, body, false);
+    return _fetch('DELETE', auth.url + path, auth.key, body, false);
 }
 
 export default {
