@@ -8,7 +8,7 @@ import {
     UpdateUserOptions,
 } from './options';
 import { application as routes } from '../routes';
-import { AppServer, Egg, Nest, Node, NodeConfig, User } from './types';
+import { Allocation, AppServer, Egg, Nest, Node, NodeConfig, User } from './types';
 import conv from '../conversions';
 import http from '../http';
 
@@ -121,14 +121,42 @@ export interface IApplication {
     getNodes(id: number): Promise<Node>;
     /**
      * @param id The ID of the node.
+     * @returns An array of node allocation objects.
+     */
+    getNodeAllocations(id: number): Promise<Allocation[]>;
+    /**
+     * @param id The ID of the node.
      * @returns The configuration object for the specified node.
      */
     getNodeConfig(id: number): Promise<NodeConfig>;
+    /**
+     * Creates one or more allocations for a node. The `ports` parameter supports the use of port
+     * ranges for creating allocations instead of naming each individual port.
+     * @example
+     * ```
+     * // creates 1000 allocations from port 5000 to port 6000.
+     * app.createAllocations(2, '10.0.0.4', ['5000-6000']);
+     * ```
+     * 
+     * Allocations below port 1025 cannot be created, and you cannot create more than 1000
+     * allocations per port range.
+     * @param id The ID of the node.
+     * @param ip The IP for the allocation(s).
+     * @param ports The ports or port ranges to create allocations for.
+     * @param [alias] The IP alias for the alloactions.
+     */
+    createNodeAllocations(id: number, ip: string, ports: string[], alias?: string): Promise<void>;
     /**
      * Deletes a node by its ID. Note that this will not work if there are servers on the node.
      * @param id The ID of the node.
      */
     deleteNode(id: number): Promise<void>;
+    /**
+     * Deletes an allocation from the specified node.
+     * @param node The ID of the node.
+     * @param id The ID of the allocation.
+     */
+    deleteNodeAllocation(node: number, id: number): Promise<void>;
     /** @returns An array of nest objects. */
     getNests(): Promise<Nest[]>;
     /**
@@ -339,6 +367,14 @@ export function createApp(arg1: unknown, arg2?: string) {
             return data.data.map(d => conv.toCamelCase(d.attributes));
         },
 
+        async getNodeAllocations(id) {
+            const data = await http.get<FractalData<Allocation>>(
+                routes.allocations.main(id),
+                this.auth
+            );
+            return data.data.map(d => d.attributes);
+        },
+
         async getNodeConfig(id) {
             const data = await http.get<NodeConfig>(
                 routes.nodes.config(id),
@@ -347,8 +383,20 @@ export function createApp(arg1: unknown, arg2?: string) {
             return conv.toCamelCase(data);
         },
 
+        createNodeAllocations(id, ip, ports, alias?) {
+            return http.post(
+                routes.allocations.main(id),
+                this.auth,
+                { ip, ports, alias }
+            );
+        },
+
         deleteNode(id) {
             return http.delete(routes.nodes.get(id), this.auth);
+        },
+
+        deleteNodeAllocation(node, id) {
+            return http.delete(routes.allocations.get(node, id), this.auth);
         },
 
         async getNests(arg = undefined) {
