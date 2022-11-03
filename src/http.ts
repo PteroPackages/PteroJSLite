@@ -23,7 +23,7 @@ async function _fetch<R>(
     body: any,
     text: boolean
 ): Promise<R> {
-    body &&= JSON.stringify(body);
+    if (!text) body &&= JSON.stringify(body);
     return axios
         .request<R>({
             method,
