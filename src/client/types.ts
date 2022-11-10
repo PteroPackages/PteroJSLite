@@ -120,3 +120,8 @@ export interface WebSocketAuth {
     socket: string;
     token: string;
 }
+
+export interface WebSocketPayload {
+    event: string;
+    args: string[];
+}
