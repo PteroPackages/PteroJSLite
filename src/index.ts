@@ -8,6 +8,7 @@ export * from './app/types';
 // Client API
 export * from './client';
 export * from './client/types';
+export * from './ws';
 
 // HTTPS
 export { default as http } from './http';
