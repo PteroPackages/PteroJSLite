@@ -7,7 +7,6 @@ import http from './http';
 export interface IShard {
     connect(): Promise<void>;
     _heartbeat(): Promise<void>;
-    _send(event: string, args?: string[]): void;
     destroy(): void;
     onDebug?: (data: any) => void;
     onRaw?: (payload: WebSocketPayload) => void;
