@@ -1,5 +1,5 @@
 import { MessageEvent, WebSocket } from 'ws';
-import { Resources, WebSocketAuth, WebSocketPayload } from './client/types';
+import { PowerSignal, Resources, WebSocketAuth, WebSocketPayload } from './client/types';
 import { Auth } from './common';
 import conv from './conversions';
 import http from './http';
@@ -7,6 +7,7 @@ import http from './http';
 export interface IShard {
     connect(): Promise<void>;
     _heartbeat(): Promise<void>;
+    _send(event: string, args?: string[]): void;
     destroy(): void;
     onDebug?: (data: any) => void;
     onRaw?: (payload: WebSocketPayload) => void;
@@ -24,6 +25,10 @@ export interface IShard {
     onStatusUpdate?: (status: string) => void;
     onTransferOutput?: (out: string[]) => void;
     onTransferStatus?: (status: string) => void;
+    requestLogs(): void;
+    requestStats(): void;
+    sendCommand(command: string): void;
+    setPowerState(signal: PowerSignal): void;
 }
 
 export type Shard = IShard & ThisType<{ auth: Auth, id: string, ws: WebSocket | null }>;
@@ -76,7 +81,23 @@ export function createShard(id: string, auth: Auth): Shard {
         destroy() {
             this.ws?.close(1000);
             this.ws = null;
-        }
+        },
+
+        requestLogs() {
+            this.ws?.send(JSON.stringify({ event: 'send logs', args:[] }));
+        },
+
+        requestStats() {
+            this.ws?.send(JSON.stringify({ event: 'send stats', args:[] }));
+        },
+
+        sendCommand(command) {
+            this.ws?.send(JSON.stringify({ event: 'send command', args:[command] }));
+        },
+
+        setPowerState(signal) {
+            this.ws?.send(JSON.stringify({ event: 'set state', args:[signal] }));
+        },
     };
 
     return <Shard>{
