@@ -34,6 +34,12 @@
     "docs": "typedoc --out docs src/index.ts",
     "format": "prettier --write src/**/**.ts"
   },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    "singleQuote": true,
+    "tabWidth": 4
+  },
   "tsup": {
     "bundle": true,
     "clean": true,
