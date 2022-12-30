@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { APIError, Auth, Method } from './common';
+import { APIError, Auth, FetchOptions, Filter, Include, Method } from './common';
 import { version } from '.';
 
 function getHeaders(
@@ -49,6 +49,17 @@ async function _fetch<R>(
         });
 }
 
+function resolve(opts: Filter<Include<FetchOptions>>): string {
+    let params = new URLSearchParams();
+
+    if (opts.filter) params.append(`filter[${opts.filter[0]}]`, opts.filter[1]);
+    if (opts.include) params.append('include', opts.include.join());
+    if (opts.page) params.append('page', opts.page.toString());
+    if (opts.perPage) params.append('per_page', opts.perPage.toString());
+
+    return '?' + params.toString();
+}
+
 function _get<R>(
     path: string,
     auth: Auth,
@@ -89,6 +100,7 @@ function _delete(
 
 export default {
     _fetch,
+    resolve,
     get: _get,
     post: _post,
     patch: _patch,

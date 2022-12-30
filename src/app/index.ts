@@ -1,4 +1,11 @@
-import { Auth, FractalData, FractalItem } from '../common';
+import {
+    Auth,
+    FetchOptions,
+    Filter,
+    FractalData,
+    FractalItem,
+    Include
+} from '../common';
 import {
     CreateServerOptions,
     CreateUserOptions,
@@ -15,6 +22,7 @@ import {
     Nest,
     Node,
     NodeConfig,
+    RawUser,
     User,
 } from './types';
 import conv from '../conversions';
@@ -22,13 +30,13 @@ import http from '../http';
 
 export interface IApplication {
     /** @returns An array of user objects. */
-    getUsers(): Promise<User[]>;
+    getUsers(options?: Filter<Include<FetchOptions>>): Promise<User[]>;
     /**
      * @param id The ID or external ID of the user.
      * @returns A user object based on the ID specified. If it is a string, it will fetch
      * by the user's external ID, otherwise it will fetch by the user's normal ID.
      */
-    getUsers(id: number | string): Promise<User>;
+    getUsers(id: number | string, options?: Filter<Include<FetchOptions>>): Promise<User>;
     /**
      * Creates a user account with the specified options.
      * @param options The options to set.
@@ -230,15 +238,25 @@ export function createApp(arg1: unknown, arg2?: string) {
     }
 
     const impl = <IApplication>{
-        async getUsers(arg = undefined) {
+        async getUsers(arg = undefined, op = undefined) {
             let path = routes.users.main();
+            let q = typeof arg === 'object' || !!op;
+
             if (arg) {
                 switch (typeof arg) {
                     case 'number':
                         path = routes.users.get(arg);
+                        if (op) path += http.resolve(op);
                         break;
                     case 'string':
                         path = routes.users.ext(arg);
+                        if (op) path += http.resolve(op);
+                        break;
+                    case 'object':
+                        if (Array.isArray(arg)) throw new TypeError(
+                            'expected number, string or fetch options; got an array'
+                        );
+                        path += http.resolve(arg);
                         break;
                     default:
                         throw new TypeError(
@@ -246,12 +264,34 @@ export function createApp(arg1: unknown, arg2?: string) {
                         );
                 }
 
-                const data = await http.get<FractalItem<User>>(path, this.auth);
-                return conv.toCamelCase(data.attributes);
+                const data = await http.get<FractalItem<RawUser>>(path, this.auth);
+                const raw = conv.toCamelCase<RawUser>(data.attributes);
+                if (q) {
+                    raw.relationships ||= {};
+                    const { relationships, ...user } = raw;
+                    if (relationships?.servers)
+                        user.servers = conv.toCamelCase(relationships.servers.data.map(d => d.attributes));
+
+                    return user;
+                }
+
+                return raw;
             }
 
-            const data = await http.get<FractalData<User>>(path, this.auth);
-            return data.data.map(d => conv.toCamelCase(d.attributes));
+            const data = await http.get<FractalData<RawUser>>(path, this.auth);
+            const raw = data.data.map(d => conv.toCamelCase<RawUser>(d.attributes));
+            if (q) {
+                return raw.map(r => {
+                    r.relationships ||= {};
+                    const { relationships, ...user } = r;
+                    if (relationships?.servers)
+                        user.servers = conv.toCamelCase(relationships.servers.data.map(d => d.attributes));
+
+                    return user;
+                });
+            }
+
+            return raw;
         },
 
         async createUser(options) {

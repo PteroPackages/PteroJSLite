@@ -1,4 +1,4 @@
-import { FeatureLimits, Limits } from '../common';
+import { FeatureLimits, FractalData, Limits } from '../common';
 
 export interface Allocation {
     id: number;
@@ -7,6 +7,33 @@ export interface Allocation {
     port: number;
     notes: string | null;
     assigned: boolean;
+}
+
+export interface AppServer {
+    id: number;
+    uuid: string;
+    identifier: string;
+    externalId: string | undefined;
+    name: string;
+    description: string;
+    status: string | undefined;
+    suspended: boolean;
+    limits: Limits;
+    featureLimits: FeatureLimits;
+    user: number;
+    node: number;
+    nest: number;
+    egg: number;
+    container: Container;
+    createdAt: string;
+    updatedAt: string | null;
+}
+
+export interface Container {
+    startupCommand: number;
+    image: string;
+    installed: number;
+    environment: Record<string, string | number | boolean>;
 }
 
 export interface Egg {
@@ -98,24 +125,10 @@ export interface NodeConfig {
     remote: string;
 }
 
-export interface AppServer {
-    id: number;
-    uuid: string;
-    identifier: string;
-    externalId: string | undefined;
-    name: string;
-    description: string | undefined;
-    status: string | undefined;
-    suspended: boolean;
-    limits: Limits;
-    featureLimits: FeatureLimits;
-    user: number;
-    node: number;
-    nest: number;
-    egg: number;
-    container: Container;
-    createdAt: string;
-    updatedAt: string | null;
+export interface RawUser extends User {
+    relationships?:{
+        servers?: FractalData<AppServer>;
+    };
 }
 
 export interface User {
@@ -132,11 +145,5 @@ export interface User {
     '2fa': boolean;
     createdAt: string;
     updatedAt: string | null;
-}
-
-export interface Container {
-    startupCommand: number;
-    image: string;
-    installed: number;
-    environment: Record<string, string | number | boolean>;
+    servers?: AppServer[];
 }

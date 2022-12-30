@@ -65,4 +65,4 @@ Please [create an issue](https://github.com/PteroPackages/PteroJSLite/issues) fo
 
 This repository is managed under the MIT license.
 
-© 2021-2022 PteroPackages
+© 2021-present PteroPackages
